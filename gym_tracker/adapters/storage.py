@@ -1,35 +1,39 @@
 import json
 from pathlib import Path
 
-FILE_PATH = Path("gyms.json")
+from gym_tracker.domain.model import GymCapacity
+
+DATA_FILE = Path("gyms.json")
 
 
 def save_gyms(gyms):
-    data = {
-        name: {
-            "current": gym.current_count,
-            "max": gym.max_capacity,
-        }
-        for name, gym in gyms.items()
-    }
+    data = {}
 
-    with open(FILE_PATH, "w") as f:
+    for name, gym in gyms.items():
+        data[name] = {
+            "gym_name": gym.gym_name,
+            "max_capacity": gym.max_capacity,
+            "current_count": gym.current_count,
+        }
+
+    with open(DATA_FILE, "w") as f:
         json.dump(data, f)
 
 
 def load_gyms():
-    if not FILE_PATH.exists():
+    if not DATA_FILE.exists():
         return {}
 
-    with open(FILE_PATH, "r") as f:
+    with open(DATA_FILE, "r") as f:
         data = json.load(f)
 
-    from gym_tracker.domain.model import GymCapacity
-
     gyms = {}
-    for name, values in data.items():
-        gym = GymCapacity(name, values["max"])
-        gym.current_count = values["current"]
+    for name, gym_data in data.items():
+        gym = GymCapacity(
+            gym_data["gym_name"],
+            gym_data["max_capacity"],
+        )
+        gym.current_count = gym_data["current_count"]
         gyms[name] = gym
 
     return gyms
