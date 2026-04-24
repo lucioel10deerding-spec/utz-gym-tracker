@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 from gym_tracker.services.services import (
     create_gym,
@@ -7,7 +7,7 @@ from gym_tracker.services.services import (
     get_capacity,
 )
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
 
 @app.post("/gyms")
@@ -72,3 +72,27 @@ def leave_gym_endpoint(name):
         "max": capacity["max"],
         "is_full": capacity["current"] >= capacity["max"],
     }, 200
+@app.get("/dashboard/<name>")
+def dashboard(name):
+    capacity = get_capacity(name)
+
+    if capacity is None:
+        return "Gym not found", 404
+
+    current = capacity["current"]
+    max_capacity = capacity["max"]
+
+    if current >= max_capacity:
+        status = "FULL"
+    elif current >= max_capacity * 0.7:
+        status = "BUSY"
+    else:
+        status = "NORMAL"
+
+    return render_template(
+        "dashboard.html",
+        name=name,
+        current=current,
+        max=max_capacity,
+        status=status,
+    )

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="5" />
+    <title>Live Gym Capacity Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+        .card {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+        }
+        h1 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        .gym-name {
+            margin: 0 0 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .metric {
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        .status {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0.4rem 0.7rem;
+            border-radius: 999px;
+            background: #e5e7eb;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <h1>Live Gym Capacity</h1>
+        <p class="gym-name">{{ name }}</p>
+        <p class="metric">Current: {{ current }} / {{ max }}</p>
+        <p class="metric">Status: <span class="status">{{ status }}</span></p>
+    </main>
+</body>
+</html>

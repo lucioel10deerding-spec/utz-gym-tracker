@@ -1,6 +1,25 @@
+import os
 from gym_tracker.entrypoints.api import app
 from gym_tracker.domain.model import GymCapacity
 from gym_tracker.services.services import create_gym, enter_gym, get_capacity
+from gym_tracker.adapters.storage import load_gyms
+
+def test_saved_gyms_are_loaded():
+    create_gym("Reload Gym", 25)
+
+    gyms = load_gyms()
+
+    assert "Reload Gym" in gyms
+    assert gyms["Reload Gym"].max_capacity == 25
+
+def test_enter_gym_is_saved_to_file():
+    create_gym("Saved Enter Gym", 10)
+
+    enter_gym("Saved Enter Gym")
+
+    gyms = load_gyms()
+
+    assert gyms["Saved Enter Gym"].current_count == 1
 
 
 def test_new_gym_starts_with_zero_people():
@@ -103,3 +122,8 @@ def test_leave_unknown_gym_returns_404():
     response = client.post("/gyms/UnknownGym/leave")
 
     assert response.status_code == 404
+
+def test_gyms_json_file_exists_after_create():
+    create_gym("File Gym", 40)
+
+    assert os.path.exists("gyms.json")
