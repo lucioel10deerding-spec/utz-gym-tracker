@@ -10,13 +10,25 @@ def create_gym(name: str, max_capacity: int):
     gyms[name] = gym
     save_gyms(gyms)
 
+    return {
+        "current": gym.current_count,
+        "max": gym.max_capacity,
+    }
+
 
 def enter_gym(name: str):
     gym = gyms.get(name)
 
-    if gym:
-        gym.enter()
-        save_gyms(gyms)
+    if gym is None:
+        return None
+
+    gym.enter()
+    save_gyms(gyms)
+
+    return {
+        "current": gym.current_count,
+        "max": gym.max_capacity,
+    }
 
 
 def leave_gym(name: str):
@@ -44,4 +56,3 @@ def get_capacity(name: str):
         }
 
     return None
-    

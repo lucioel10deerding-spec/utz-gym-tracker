@@ -1,10 +1,10 @@
 import json
 import os
 
+from gym_tracker import config
 from gym_tracker.domain.model import GymCapacity
 
-
-FILE_NAME = "gyms.json"
+DATA_FILE = config.DATA_FILE
 
 
 def save_gyms(gyms):
@@ -17,15 +17,15 @@ def save_gyms(gyms):
             "current_count": gym.current_count,
         }
 
-    with open(FILE_NAME, "w") as file:
+    with open(DATA_FILE, "w") as file:
         json.dump(data, file)
 
 
 def load_gyms():
-    if not os.path.exists(FILE_NAME):
+    if not os.path.exists(DATA_FILE):
         return {}
 
-    with open(FILE_NAME, "r") as file:
+    with open(DATA_FILE, "r") as file:
         data = json.load(file)
 
     gyms = {}

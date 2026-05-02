@@ -1,4 +1,5 @@
 import os
+from gym_tracker import config
 from gym_tracker.entrypoints.api import app
 from gym_tracker.domain.model import GymCapacity
 from gym_tracker.services.services import create_gym, enter_gym, get_capacity
@@ -123,7 +124,15 @@ def test_leave_unknown_gym_returns_404():
 
     assert response.status_code == 404
 
+
+def test_enter_unknown_gym_returns_404():
+    client = app.test_client()
+
+    response = client.post("/gyms/UnknownGym/enter")
+
+    assert response.status_code == 404
+
 def test_gyms_json_file_exists_after_create():
     create_gym("File Gym", 40)
 
-    assert os.path.exists("gyms.json")
+    assert os.path.exists(config.DATA_FILE)
