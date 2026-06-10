@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>UTZ Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: #f4fbfc;
+            background:
+                radial-gradient(circle at 22% 18%, rgba(34, 211, 238, 0.18), transparent 30%),
+                radial-gradient(circle at 78% 8%, rgba(168, 85, 247, 0.18), transparent 34%),
+                radial-gradient(circle at 50% 94%, rgba(16, 185, 129, 0.12), transparent 34%),
+                #050608;
+            display: grid;
+            place-items: center;
+            padding: 28px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at center, black, transparent 75%);
+            pointer-events: none;
+        }
+
+        .login-panel {
+            position: relative;
+            width: min(100%, 420px);
+            padding: 32px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.045));
+            border: 1px solid rgba(255,255,255,0.16);
+            box-shadow:
+                0 38px 110px rgba(0,0,0,0.52),
+                inset 0 1px 0 rgba(255,255,255,0.16);
+            backdrop-filter: blur(28px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            color: #7df9ff;
+            font-weight: 900;
+            background: rgba(34,211,238,0.08);
+            border: 1px solid rgba(103,232,249,0.22);
+            box-shadow: inset 0 0 18px rgba(34,211,238,0.08);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.05;
+            font-weight: 900;
+        }
+
+        .subtitle {
+            margin-top: 5px;
+            color: rgba(244,251,252,0.58);
+            font-size: 13px;
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 7px;
+            color: rgba(244,251,252,0.76);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+            height: 46px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(4, 10, 13, 0.72);
+            color: #f4fbfc;
+            padding: 0 13px;
+            font: inherit;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: rgba(125,249,255,0.65);
+            box-shadow: 0 0 0 3px rgba(34,211,238,0.14);
+        }
+
+        button {
+            width: 100%;
+            height: 46px;
+            margin-top: 22px;
+            border: 0;
+            border-radius: 8px;
+            color: #031316;
+            background: linear-gradient(135deg, #7df9ff, #10b981);
+            font: inherit;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            cursor: wait;
+            opacity: 0.72;
+        }
+
+        .error-message {
+            min-height: 20px;
+            margin-top: 14px;
+            color: #fca5a5;
+            font-size: 13px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <main class="login-panel">
+        <div class="brand">
+            <div class="logo">U</div>
+            <div>
+                <h1>UTZ Login</h1>
+                <div class="subtitle">Realtime Gym Intelligence</div>
+            </div>
+        </div>
+
+        <form id="login-form">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+            <button id="login-button" type="submit">Login</button>
+            <div class="error-message" id="login-error" aria-live="polite"></div>
+        </form>
+    </main>
+
+    <script>
+        const form = document.getElementById("login-form");
+        const errorElement = document.getElementById("login-error");
+        const loginButton = document.getElementById("login-button");
+
+        async function fetchMyGym(token) {
+            const response = await fetch("/my-gym", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Gym lookup failed");
+            }
+
+            return response.json();
+        }
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            errorElement.textContent = "";
+            loginButton.disabled = true;
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Login failed");
+                }
+
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("username", data.username);
+                localStorage.setItem("gym_id", data.gym_id);
+                localStorage.setItem("role", data.role);
+
+                const gymData = await fetchMyGym(data.token);
+
+                if (!gymData.gym || !gymData.gym.name) {
+                    throw new Error("No gym found for this user");
+                }
+
+                const gymName = gymData.gym.name;
+                window.location.href = `/dashboard/${encodeURIComponent(gymName)}`;
+            } catch (error) {
+                errorElement.textContent = error.message;
+            } finally {
+                loginButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

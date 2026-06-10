@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>UTZ Dashboard</title>
-    <meta http-equiv="refresh" content="5">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -24,10 +23,10 @@
                 radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.14), transparent 35%),
                 #050608;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 32px;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         body::before {
@@ -99,6 +98,38 @@
             margin-right: 8px;
             box-shadow: 0 0 18px #22c55e;
             animation: pulse 1.6s infinite;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logout-button {
+            min-height: 40px;
+            padding: 9px 14px;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.78);
+            font: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            backdrop-filter: blur(22px);
+            transition: 180ms ease;
+        }
+
+        .logout-button:hover {
+            color: white;
+            border-color: rgba(125,249,255,0.38);
+            background: rgba(125,249,255,0.10);
+        }
+
+        /* Visueller Zustand, falls die Socket.IO-Verbindung kurz getrennt ist. */
+        .live-pill.is-offline .live-dot {
+            background: #f97316;
+            box-shadow: 0 0 18px #f97316;
         }
 
         .hero-card {
@@ -265,6 +296,152 @@
             font-size: 14px;
         }
 
+        .alert-card {
+            margin-top: 22px;
+            padding: 24px 28px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                0 22px 60px rgba(0,0,0,0.28);
+        }
+
+        .alert-card[data-severity="info"] {
+            border-color: rgba(34,211,238,0.35);
+        }
+
+        .alert-card[data-severity="warning"] {
+            border-color: rgba(250,204,21,0.45);
+        }
+
+        .alert-card[data-severity="critical"] {
+            border-color: rgba(248,113,113,0.5);
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .alert-title {
+            font-size: 22px;
+            font-weight: 850;
+            letter-spacing: -0.03em;
+        }
+
+        .alert-severity {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: rgba(255,255,255,0.74);
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .alert-message {
+            color: rgba(255,255,255,0.78);
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .alert-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .alert-metric {
+            padding: 14px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.055);
+            border: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .alert-metric span {
+            display: block;
+            color: rgba(255,255,255,0.48);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .alert-metric strong {
+            font-size: 24px;
+            letter-spacing: -0.03em;
+        }
+
+        /* Analytics-Karte fuer den Chart.js Line Chart im SaaS-Dashboard-Stil. */
+        .chart-card {
+            margin-top: 22px;
+            padding: 28px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                0 22px 60px rgba(0,0,0,0.28);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .chart-title {
+            font-size: 24px;
+            font-weight: 850;
+            letter-spacing: -0.03em;
+        }
+
+        .chart-subtitle {
+            color: rgba(255,255,255,0.55);
+            margin-top: 4px;
+            font-size: 14px;
+        }
+
+        .chart-badge {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(34,211,238,0.12);
+            border: 1px solid rgba(34,211,238,0.24);
+            white-space: nowrap;
+        }
+
+        /* Fester responsive Rahmen, damit Chart.js sauber skalieren kann. */
+        .chart-frame {
+            position: relative;
+            height: 280px;
+        }
+
+        /* Leerer Zustand, falls noch keine historischen Messpunkte vorhanden sind. */
+        .chart-empty {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.52);
+            font-size: 14px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .chart-frame.is-empty .chart-empty {
+            display: flex;
+        }
+
         @keyframes fadeUp {
             from {
                 opacity: 0;
@@ -322,61 +499,2087 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .chart-header {
+                flex-direction: column;
+            }
+
+            .chart-frame {
+                height: 240px;
+            }
+        }
+
+        :root {
+            --page-bg: #f5f7fb;
+            --surface: rgba(255,255,255,0.84);
+            --surface-strong: #ffffff;
+            --line: rgba(15,23,42,0.10);
+            --text: #0f172a;
+            --muted: #64748b;
+            --soft-shadow: 0 24px 70px rgba(15,23,42,0.10);
+            --status-color: #16a34a;
+            --status-soft: rgba(22,163,74,0.12);
+            --status-line: rgba(22,163,74,0.28);
+        }
+
+        body[data-status="BUSY"] {
+            --status-color: #f59e0b;
+            --status-soft: rgba(245,158,11,0.14);
+            --status-line: rgba(245,158,11,0.34);
+        }
+
+        body[data-status="FULL"] {
+            --status-color: #ef4444;
+            --status-soft: rgba(239,68,68,0.13);
+            --status-line: rgba(239,68,68,0.32);
+        }
+
+        body {
+            color: var(--text);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.92), rgba(245,247,251,0.98)),
+                var(--page-bg);
+            padding: 20px;
+        }
+
+        body::before {
+            background-image:
+                linear-gradient(rgba(15,23,42,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15,23,42,0.035) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: linear-gradient(to bottom, black, transparent 76%);
+        }
+
+        .dashboard {
+            width: min(100%, 1120px);
+        }
+
+        .topbar {
+            margin-bottom: 18px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 16px 40px rgba(15,23,42,0.18);
+        }
+
+        .brand-text span,
+        .subtitle,
+        .chart-subtitle,
+        .status-subtitle,
+        .refresh,
+        .alert-message {
+            color: var(--muted);
+        }
+
+        .live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 13px;
+            color: #166534;
+            background: rgba(240,253,244,0.92);
+            border-color: rgba(22,163,74,0.22);
+            box-shadow: 0 10px 30px rgba(22,163,74,0.10);
+        }
+
+        .live-pill.is-offline {
+            color: #9a3412;
+            background: rgba(255,247,237,0.92);
+            border-color: rgba(249,115,22,0.24);
+        }
+
+        .live-dot {
+            margin-right: 0;
+            background: #22c55e;
+        }
+
+        .hero-card,
+        .chart-card {
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            backdrop-filter: blur(24px);
+            box-shadow: var(--soft-shadow);
+        }
+
+        .hero-card {
+            padding: clamp(22px, 4vw, 42px);
+        }
+
+        .hero-card::before,
+        .hero-card:hover {
+            animation: none;
+            transform: none;
+        }
+
+        .hero-card::before {
+            display: none;
+        }
+
+        .gym-name {
+            color: var(--text);
+            background: none;
+            font-size: clamp(36px, 7vw, 76px);
+            letter-spacing: 0;
+        }
+
+        .subtitle {
+            margin-bottom: 28px;
+        }
+
+        .stats-grid {
+            grid-template-columns: minmax(0, 1.45fr) minmax(240px, 0.8fr);
+            align-items: stretch;
+        }
+
+        .stat-box,
+        .status-card,
+        .alert-card,
+        .chart-card {
+            background: var(--surface-strong);
+            border-color: var(--line);
+            box-shadow: 0 14px 42px rgba(15,23,42,0.07);
+            border-radius: 8px;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-2px);
+            background: #ffffff;
+        }
+
+        .capacity-card {
+            display: flex;
+            min-height: 246px;
+            flex-direction: column;
+            justify-content: space-between;
+            border-color: var(--status-line);
+            background:
+                linear-gradient(135deg, var(--surface-strong), var(--status-soft)),
+                #ffffff;
+        }
+
+        .label {
+            color: var(--muted);
+            letter-spacing: 0.08em;
+        }
+
+        .capacity {
+            color: var(--text);
+            letter-spacing: 0;
+        }
+
+        #current_count {
+            color: var(--text);
+        }
+
+        .capacity span {
+            color: #94a3b8;
+        }
+
+        .capacity-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-chip,
+        .chart-badge,
+        .alert-severity {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            color: var(--status-color);
+            background: var(--status-soft);
+            border: 1px solid var(--status-line);
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .percent {
+            color: var(--text);
+            letter-spacing: 0;
+        }
+
+        .progress {
+            height: 12px;
+            background: #e2e8f0;
+            border-color: rgba(15,23,42,0.06);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--status-color), color-mix(in srgb, var(--status-color) 60%, #ffffff));
+            box-shadow: 0 10px 26px var(--status-soft);
+        }
+
+        .status-card {
+            border-color: var(--status-line);
+        }
+
+        .status-orb {
+            width: 14px;
+            height: 14px;
+            background: var(--status-color);
+            box-shadow: 0 0 0 8px var(--status-soft), 0 0 28px var(--status-color);
+        }
+
+        .status-title,
+        .alert-title,
+        .chart-title,
+        .alert-metric strong {
+            color: var(--text);
+            letter-spacing: 0;
+        }
+
+        .alert-card[data-severity="info"] {
+            border-color: rgba(22,163,74,0.24);
+        }
+
+        .alert-card[data-severity="warning"] {
+            border-color: rgba(245,158,11,0.30);
+        }
+
+        .alert-card[data-severity="critical"] {
+            border-color: rgba(239,68,68,0.30);
+        }
+
+        .alert-metric {
+            background: #f8fafc;
+            border-color: rgba(15,23,42,0.08);
+        }
+
+        .alert-metric span {
+            color: var(--muted);
+        }
+
+        .chart-card {
+            margin-top: 18px;
+        }
+
+        .chart-frame {
+            height: clamp(260px, 36vw, 360px);
+            padding: 14px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid rgba(15,23,42,0.07);
+        }
+
+        .chart-empty {
+            color: var(--muted);
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 14px;
+            }
+
+            .hero-card,
+            .chart-card {
+                border-radius: 8px;
+            }
+
+            .stats-grid,
+            .alert-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .capacity-card {
+                min-height: 218px;
+            }
+
+            .capacity {
+                font-size: clamp(56px, 18vw, 82px);
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            z-index: 50;
+            display: grid;
+            gap: 10px;
+            width: min(360px, calc(100vw - 28px));
+            pointer-events: none;
+        }
+
+        .toast {
+            display: grid;
+            grid-template-columns: 10px 1fr;
+            gap: 12px;
+            align-items: start;
+            padding: 14px 15px;
+            border-radius: 8px;
+            color: var(--text);
+            background: rgba(255,255,255,0.86);
+            border: 1px solid rgba(15,23,42,0.10);
+            box-shadow: 0 20px 56px rgba(15,23,42,0.16);
+            backdrop-filter: blur(20px);
+            transform: translateY(-8px) translateX(10px);
+            opacity: 0;
+            animation: toastIn 220ms ease forwards;
+            overflow: hidden;
+        }
+
+        .toast.is-hiding {
+            animation: toastOut 220ms ease forwards;
+        }
+
+        .toast-marker {
+            width: 10px;
+            height: 10px;
+            margin-top: 4px;
+            border-radius: 999px;
+            background: #2563eb;
+            box-shadow: 0 0 0 6px rgba(37,99,235,0.10);
+        }
+
+        .toast[data-tone="success"] .toast-marker {
+            background: #16a34a;
+            box-shadow: 0 0 0 6px rgba(22,163,74,0.12);
+        }
+
+        .toast[data-tone="warning"] .toast-marker {
+            background: #f59e0b;
+            box-shadow: 0 0 0 6px rgba(245,158,11,0.14);
+        }
+
+        .toast[data-tone="critical"] .toast-marker {
+            background: #ef4444;
+            box-shadow: 0 0 0 6px rgba(239,68,68,0.13);
+        }
+
+        .toast-title {
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.25;
+        }
+
+        .toast-message {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        @keyframes toastIn {
+            to {
+                transform: translateY(0) translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                transform: translateY(-8px) translateX(10px);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .toast-container {
+                top: 12px;
+                right: 14px;
+                left: 14px;
+                width: auto;
+            }
+        }
+
+        :root {
+            --page-bg: #050505;
+            --surface: rgba(10,10,10,0.78);
+            --surface-strong: rgba(14,18,20,0.88);
+            --line: rgba(125,249,255,0.16);
+            --text: rgba(244,251,252,0.96);
+            --muted: rgba(176,195,199,0.62);
+            --cyan: #22d3ee;
+            --cyan-strong: #67e8f9;
+            --cyan-soft: rgba(34,211,238,0.12);
+            --accent-color: var(--cyan-strong);
+            --soft-shadow:
+                0 28px 90px rgba(0,0,0,0.72),
+                inset 0 1px 0 rgba(255,255,255,0.045);
+            --status-color: #22d3ee;
+            --status-soft: rgba(34,211,238,0.11);
+            --status-line: rgba(34,211,238,0.30);
+        }
+
+        body[data-status="BUSY"] {
+            --status-color: #fbbf24;
+            --status-soft: rgba(251,191,36,0.10);
+            --status-line: rgba(251,191,36,0.24);
+        }
+
+        body[data-status="FULL"] {
+            --status-color: #fb7185;
+            --status-soft: rgba(251,113,133,0.10);
+            --status-line: rgba(251,113,133,0.24);
+        }
+
+        body {
+            color: var(--text);
+            background:
+                linear-gradient(180deg, rgba(34,211,238,0.055), transparent 34%),
+                linear-gradient(145deg, #050505 0%, #0A0A0A 46%, #050505 100%);
+        }
+
+        body::before {
+            background-image:
+                linear-gradient(rgba(125,249,255,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(125,249,255,0.028) 1px, transparent 1px);
+            background-size: 56px 56px;
+            opacity: 0.62;
+            mask-image: linear-gradient(to bottom, black, transparent 82%);
+        }
+
+        .topbar {
+            padding: 12px;
+            border: 1px solid rgba(125,249,255,0.12);
+            border-radius: 8px;
+            background: rgba(10,10,10,0.58);
+            box-shadow:
+                0 18px 60px rgba(0,0,0,0.42),
+                inset 0 0 28px rgba(34,211,238,0.035);
+            backdrop-filter: blur(18px);
+        }
+
+        .logo {
+            background:
+                linear-gradient(180deg, rgba(34,211,238,0.16), rgba(34,211,238,0.035)),
+                #0A0A0A;
+            border: 1px solid rgba(103,232,249,0.26);
+            color: var(--cyan-strong);
+            box-shadow:
+                0 0 34px rgba(34,211,238,0.18),
+                inset 0 0 18px rgba(34,211,238,0.08);
+        }
+
+        .logo {
+            display: none;
+            overflow: hidden;
+        }
+
+        .logo.has-image {
+            display: grid;
+            padding: 4px;
+            background: rgba(255,255,255,0.94);
+            border-color: color-mix(in srgb, var(--accent-color) 44%, transparent);
+            box-shadow: 0 0 28px color-mix(in srgb, var(--accent-color) 24%, transparent);
+        }
+
+        .logo img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: contain;
+        }
+
+        .brand-text strong {
+            color: var(--text);
+        }
+
+        .brand-text span,
+        .subtitle,
+        .chart-subtitle,
+        .status-subtitle,
+        .refresh,
+        .alert-message,
+        .capacity-meta,
+        .toast-message {
+            color: var(--muted);
+        }
+
+        .live-pill {
+            color: var(--cyan-strong);
+            background: rgba(8,16,18,0.74);
+            border-color: rgba(103,232,249,0.30);
+            box-shadow:
+                0 0 34px rgba(34,211,238,0.16),
+                inset 0 0 20px rgba(34,211,238,0.08);
+        }
+
+        .live-pill.is-offline {
+            color: #fbbf24;
+            background: rgba(24,18,8,0.78);
+            border-color: rgba(251,191,36,0.24);
+        }
+
+        .live-dot {
+            background: var(--cyan-strong);
+            box-shadow:
+                0 0 16px var(--cyan),
+                0 0 34px rgba(34,211,238,0.34);
+        }
+
+        .logout-button:hover,
+        .mini-kpi-icon,
+        .greeting-eyebrow,
+        .best-time-label,
+        .system-row strong,
+        .sidebar-link span:first-child {
+            color: var(--accent-color);
+        }
+
+        .live-pill {
+            color: var(--accent-color);
+            border-color: color-mix(in srgb, var(--accent-color) 30%, transparent);
+            box-shadow:
+                0 0 34px color-mix(in srgb, var(--accent-color) 16%, transparent),
+                inset 0 0 20px color-mix(in srgb, var(--accent-color) 8%, transparent);
+        }
+
+        .live-dot,
+        .sidebar-link.is-active::before,
+        .sidebar-link:hover::before {
+            background: var(--accent-color);
+            box-shadow: 0 0 18px color-mix(in srgb, var(--accent-color) 42%, transparent);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--accent-color), var(--status-color));
+        }
+
+        .capacity-ring {
+            background:
+                radial-gradient(circle at center, rgba(5,5,5,0.96) 0 56%, transparent 57%),
+                conic-gradient(var(--accent-color) var(--ring-percent), rgba(255,255,255,0.08) 0);
+        }
+
+        .hero-card,
+        .chart-card,
+        .stat-box,
+        .status-card,
+        .alert-card {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018)),
+                var(--surface);
+            border-color: var(--line);
+            box-shadow: var(--soft-shadow);
+        }
+
+        .hero-card {
+            background:
+                linear-gradient(135deg, rgba(34,211,238,0.07), transparent 38%),
+                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.016)),
+                rgba(10,10,10,0.82);
+        }
+
+        .gym-name,
+        .status-title,
+        .alert-title,
+        .chart-title,
+        .alert-metric strong,
+        .toast-title {
+            color: var(--text);
+        }
+
+        .capacity-card {
+            background:
+                linear-gradient(135deg, rgba(34,211,238,0.10), transparent 42%),
+                linear-gradient(180deg, rgba(255,255,255,0.048), rgba(255,255,255,0.018)),
+                #0A0A0A;
+            border-color: rgba(103,232,249,0.30);
+            box-shadow:
+                0 28px 90px rgba(0,0,0,0.74),
+                0 0 56px rgba(34,211,238,0.10),
+                inset 0 0 38px rgba(34,211,238,0.055);
+        }
+
+        .label {
+            color: rgba(176,195,199,0.58);
+        }
+
+        .capacity,
+        #current_count {
+            color: var(--cyan-strong);
+            text-shadow:
+                0 0 24px rgba(34,211,238,0.28),
+                0 0 56px rgba(34,211,238,0.12);
+        }
+
+        .capacity span {
+            color: rgba(176,195,199,0.44);
+            text-shadow: none;
+        }
+
+        .status-chip,
+        .chart-badge,
+        .alert-severity {
+            color: var(--status-color);
+            background: var(--status-soft);
+            border-color: var(--status-line);
+            box-shadow: inset 0 0 18px rgba(34,211,238,0.035);
+        }
+
+        .percent {
+            color: var(--text);
+        }
+
+        .progress {
+            background: rgba(255,255,255,0.055);
+            border-color: rgba(125,249,255,0.10);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--cyan), var(--status-color));
+            box-shadow:
+                0 0 18px rgba(34,211,238,0.34),
+                0 0 42px rgba(34,211,238,0.14);
+        }
+
+        .status-card {
+            border-color: var(--status-line);
+        }
+
+        .status-orb {
+            background: var(--status-color);
+            box-shadow:
+                0 0 0 8px var(--status-soft),
+                0 0 24px var(--status-color),
+                0 0 54px rgba(34,211,238,0.18);
+        }
+
+        .alert-card[data-severity="info"],
+        .alert-card[data-severity="warning"],
+        .alert-card[data-severity="critical"] {
+            border-color: var(--status-line);
+        }
+
+        .alert-metric,
+        .chart-frame {
+            background: rgba(5,5,5,0.54);
+            border-color: rgba(125,249,255,0.10);
+            box-shadow: inset 0 0 30px rgba(34,211,238,0.028);
+        }
+
+        .alert-metric span,
+        .chart-empty {
+            color: var(--muted);
+        }
+
+        .toast {
+            color: var(--text);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
+                rgba(10,10,10,0.88);
+            border-color: rgba(125,249,255,0.18);
+            box-shadow:
+                0 22px 70px rgba(0,0,0,0.56),
+                0 0 42px rgba(34,211,238,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .toast-marker,
+        .toast[data-tone="success"] .toast-marker {
+            background: var(--cyan-strong);
+            box-shadow:
+                0 0 0 6px rgba(34,211,238,0.10),
+                0 0 24px rgba(34,211,238,0.32);
+        }
+
+        .toast[data-tone="warning"] .toast-marker {
+            background: #fbbf24;
+            box-shadow:
+                0 0 0 6px rgba(251,191,36,0.10),
+                0 0 22px rgba(251,191,36,0.22);
+        }
+
+        .toast[data-tone="critical"] .toast-marker {
+            background: #fb7185;
+            box-shadow:
+                0 0 0 6px rgba(251,113,133,0.10),
+                0 0 22px rgba(251,113,133,0.22);
+        }
+
+        .ambient-layer {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-light {
+            position: absolute;
+            width: 34vw;
+            height: 34vw;
+            min-width: 260px;
+            min-height: 260px;
+            border-radius: 999px;
+            background: rgba(34,211,238,0.10);
+            filter: blur(90px);
+            opacity: 0.52;
+            animation: ambientDrift 16s ease-in-out infinite alternate;
+        }
+
+        .ambient-light.one {
+            top: -12%;
+            right: 8%;
+        }
+
+        .ambient-light.two {
+            bottom: -18%;
+            left: 6%;
+            opacity: 0.32;
+            animation-duration: 20s;
+        }
+
+        .app-shell {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 240px minmax(0, 1fr);
+            gap: 18px;
+            width: min(100%, 1400px);
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 20px;
+            align-self: start;
+            min-height: calc(100vh - 40px);
+            padding: 16px;
+            border-radius: 8px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.016)),
+                rgba(10,10,10,0.82);
+            border: 1px solid rgba(125,249,255,0.14);
+            box-shadow:
+                0 28px 90px rgba(0,0,0,0.58),
+                inset 0 0 34px rgba(34,211,238,0.04);
+            backdrop-filter: blur(22px);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(125,249,255,0.10);
+        }
+
+        .sidebar-brand-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: var(--cyan-strong);
+            font-weight: 900;
+            background: rgba(34,211,238,0.08);
+            border: 1px solid rgba(103,232,249,0.22);
+            box-shadow: inset 0 0 18px rgba(34,211,238,0.08);
+        }
+
+        .sidebar-brand-copy strong,
+        .sidebar-section-title {
+            display: block;
+            color: var(--text);
+        }
+
+        .sidebar-brand-copy span {
+            display: block;
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .sidebar-nav {
+            display: grid;
+            gap: 7px;
+            margin-top: 18px;
+        }
+
+        .sidebar-link {
+            display: grid;
+            grid-template-columns: 28px 1fr;
+            align-items: center;
+            min-height: 42px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            color: rgba(244,251,252,0.76);
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: 180ms ease;
+        }
+
+        .sidebar-link span:first-child {
+            color: var(--cyan-strong);
+            opacity: 0.82;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .sidebar-link.is-active,
+        .sidebar-link:hover {
+            color: var(--text);
+            background: rgba(34,211,238,0.075);
+            border-color: rgba(103,232,249,0.18);
+            box-shadow: inset 0 0 18px rgba(34,211,238,0.035);
+        }
+
+        .sidebar-system {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(5,5,5,0.48);
+            border: 1px solid rgba(125,249,255,0.10);
+        }
+
+        .sidebar-section-title {
+            margin-bottom: 8px;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .system-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .system-row + .system-row {
+            margin-top: 8px;
+        }
+
+        .system-row strong {
+            color: var(--cyan-strong);
+        }
+
+        .dashboard {
+            width: 100%;
+        }
+
+        .mini-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .mini-kpi {
+            padding: 16px;
+            border-radius: 8px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.016)),
+                rgba(10,10,10,0.72);
+            border: 1px solid rgba(125,249,255,0.12);
+            box-shadow:
+                0 18px 54px rgba(0,0,0,0.34),
+                inset 0 0 26px rgba(34,211,238,0.028);
+        }
+
+        .mini-kpi-icon {
+            display: inline-grid;
+            place-items: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            color: var(--cyan-strong);
+            background: rgba(34,211,238,0.08);
+            border: 1px solid rgba(103,232,249,0.16);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .mini-kpi-label {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .mini-kpi-value {
+            margin-top: 6px;
+            color: var(--text);
+            font-size: 24px;
+            font-weight: 850;
+            line-height: 1;
+        }
+
+        #current_count.is-updating {
+            animation: countPulse 520ms ease;
+        }
+
+        .chart-card {
+            box-shadow:
+                0 28px 90px rgba(0,0,0,0.62),
+                0 0 44px rgba(34,211,238,0.065),
+                inset 0 0 34px rgba(34,211,238,0.035);
+        }
+
+        .chart-frame canvas {
+            filter: drop-shadow(0 0 10px rgba(34,211,238,0.10));
+        }
+
+        @keyframes ambientDrift {
+            from {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            to {
+                transform: translate3d(26px, 18px, 0) scale(1.08);
+            }
+        }
+
+        @keyframes countPulse {
+            0%, 100% {
+                text-shadow:
+                    0 0 24px rgba(34,211,238,0.28),
+                    0 0 56px rgba(34,211,238,0.12);
+            }
+            45% {
+                text-shadow:
+                    0 0 34px rgba(103,232,249,0.48),
+                    0 0 80px rgba(34,211,238,0.24);
+            }
+        }
+
+        @media (max-width: 980px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+                min-height: auto;
+            }
+
+            .sidebar-nav {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+
+            .sidebar-link {
+                grid-template-columns: 1fr;
+                justify-items: center;
+                text-align: center;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .mini-kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .sidebar-nav {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .ambient-light {
+            opacity: 0.38;
+            animation-duration: 28s;
+            animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+        }
+
+        .ambient-light.two {
+            animation-duration: 34s;
+        }
+
+        .hero-card,
+        .chart-card,
+        .settings-card,
+        .member-access-card,
+        .members-card,
+        .stat-box,
+        .status-card,
+        .alert-card,
+        .mini-kpi,
+        .greeting-card,
+        .best-time-widget {
+            transition:
+                transform 220ms ease,
+                border-color 220ms ease,
+                box-shadow 220ms ease,
+                background 220ms ease;
+        }
+
+        .hero-card:hover,
+        .chart-card:hover,
+        .settings-card:hover,
+        .member-access-card:hover,
+        .members-card:hover,
+        .stat-box:hover,
+        .status-card:hover,
+        .alert-card:hover,
+        .mini-kpi:hover,
+        .greeting-card:hover,
+        .best-time-widget:hover {
+            transform: translateY(-2px);
+            border-color: rgba(103,232,249,0.30);
+            box-shadow:
+                0 30px 90px rgba(0,0,0,0.64),
+                0 0 34px rgba(34,211,238,0.085),
+                inset 0 0 28px rgba(34,211,238,0.038);
+        }
+
+        .sidebar-link {
+            position: relative;
+        }
+
+        .sidebar-link::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 11px;
+            bottom: 11px;
+            width: 2px;
+            border-radius: 999px;
+            background: transparent;
+            transition: 180ms ease;
+        }
+
+        .sidebar-link.is-active {
+            border-color: rgba(103,232,249,0.28);
+            background: rgba(34,211,238,0.095);
+            box-shadow:
+                0 0 28px rgba(34,211,238,0.075),
+                inset 0 0 22px rgba(34,211,238,0.055);
+        }
+
+        .sidebar-link.is-active::before,
+        .sidebar-link:hover::before {
+            background: var(--cyan-strong);
+            box-shadow: 0 0 16px rgba(103,232,249,0.44);
+        }
+
+        .greeting-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) repeat(2, 260px);
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .greeting-card,
+        .best-time-widget {
+            border-radius: 8px;
+            background:
+                linear-gradient(135deg, rgba(34,211,238,0.072), transparent 44%),
+                linear-gradient(180deg, rgba(255,255,255,0.046), rgba(255,255,255,0.016)),
+                rgba(10,10,10,0.76);
+            border: 1px solid rgba(125,249,255,0.13);
+            box-shadow:
+                0 18px 56px rgba(0,0,0,0.38),
+                inset 0 0 26px rgba(34,211,238,0.03);
+        }
+
+        .greeting-card {
+            padding: 18px;
+        }
+
+        .greeting-eyebrow,
+        .best-time-label {
+            color: var(--cyan-strong);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .greeting-title {
+            margin-top: 8px;
+            color: var(--text);
+            font-size: clamp(22px, 3vw, 34px);
+            font-weight: 850;
+            line-height: 1;
+        }
+
+        .greeting-copy {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .best-time-widget {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px;
+        }
+
+        .best-time-value {
+            margin-top: 14px;
+            color: var(--text);
+            font-size: 32px;
+            font-weight: 850;
+            line-height: 1;
+        }
+
+        .best-time-note {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .mini-kpi {
+            padding: 18px;
+        }
+
+        .mini-kpi:hover {
+            transform: translateY(-3px);
+        }
+
+        .mini-kpi-value {
+            color: rgba(244,251,252,0.94);
+            text-shadow: 0 0 18px rgba(34,211,238,0.08);
+        }
+
+        #current_count {
+            display: inline-block;
+            min-width: 1.2ch;
+            transform-origin: center bottom;
+            transition:
+                filter 260ms ease,
+                transform 260ms ease,
+                text-shadow 260ms ease;
+            will-change: transform, filter;
+        }
+
+        #current_count.is-updating {
+            animation: countMorph 620ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes ambientDrift {
+            from {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            to {
+                transform: translate3d(18px, 14px, 0) scale(1.045);
+            }
+        }
+
+        @keyframes countMorph {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+            35% {
+                transform: translateY(-1px) scale(1.035);
+                filter: blur(0.2px);
+                text-shadow:
+                    0 0 38px rgba(103,232,249,0.50),
+                    0 0 88px rgba(34,211,238,0.24);
+            }
+        }
+
+        @media (max-width: 760px) {
+            .greeting-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .app-shell {
+            grid-template-columns: 184px minmax(0, 1fr);
+            gap: 24px;
+            width: min(100%, 1480px);
+        }
+
+        .sidebar {
+            padding: 14px;
+            background: rgba(8,8,8,0.82);
+            border-color: rgba(255,255,255,0.075);
+            box-shadow: 0 26px 70px rgba(0,0,0,0.48);
+        }
+
+        .sidebar-brand {
+            padding-bottom: 14px;
+            border-bottom-color: rgba(255,255,255,0.07);
+        }
+
+        .sidebar-brand-mark {
+            background: rgba(255,255,255,0.045);
+            border-color: rgba(255,255,255,0.08);
+            box-shadow: none;
+        }
+
+        .sidebar-nav {
+            gap: 4px;
+        }
+
+        .sidebar-link {
+            min-height: 40px;
+            color: rgba(244,251,252,0.58);
+            border-color: transparent;
+        }
+
+        .sidebar-link span:first-child {
+            color: rgba(103,232,249,0.62);
+        }
+
+        .sidebar-link.is-active,
+        .sidebar-link:hover {
+            background: rgba(255,255,255,0.045);
+            border-color: rgba(255,255,255,0.07);
+            box-shadow: none;
+        }
+
+        .sidebar-link.is-active::before,
+        .sidebar-link:hover::before {
+            box-shadow: none;
+        }
+
+        .sidebar-system {
+            background: rgba(255,255,255,0.025);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        .topbar {
+            margin-bottom: 22px;
+            background: transparent;
+            border-color: transparent;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        .greeting-grid {
+            grid-template-columns: minmax(0, 1fr) repeat(2, 220px);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .greeting-card,
+        .best-time-widget {
+            background: rgba(255,255,255,0.026);
+            border-color: rgba(255,255,255,0.065);
+            box-shadow: none;
+        }
+
+        .greeting-card {
+            padding: 14px 16px;
+        }
+
+        .greeting-title {
+            font-size: clamp(18px, 2vw, 24px);
+        }
+
+        .greeting-copy,
+        .best-time-note {
+            font-size: 12px;
+        }
+
+        .best-time-value {
+            font-size: 26px;
+        }
+
+        .hero-card {
+            padding: clamp(32px, 5vw, 64px);
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012)),
+                rgba(8,8,8,0.86);
+            border-color: rgba(255,255,255,0.075);
+            box-shadow:
+                0 36px 110px rgba(0,0,0,0.58),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .gym-name {
+            font-size: clamp(42px, 6vw, 88px);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            margin-bottom: 42px;
+            color: rgba(176,195,199,0.50);
+        }
+
+        .stats-grid {
+            grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.75fr);
+            gap: clamp(24px, 4vw, 46px);
+        }
+
+        .stat-box,
+        .status-card,
+        .alert-card,
+        .chart-card,
+        .mini-kpi {
+            background: rgba(255,255,255,0.026);
+            border-color: rgba(255,255,255,0.065);
+            box-shadow: none;
+        }
+
+        .capacity-card {
+            min-height: clamp(300px, 38vw, 430px);
+            padding: clamp(28px, 4vw, 46px);
+            background: transparent;
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+        .capacity {
+            display: flex;
+            align-items: center;
+            gap: clamp(12px, 2vw, 28px);
+            white-space: nowrap;
+            font-size: clamp(96px, 15vw, 210px);
+            font-weight: 900;
+            line-height: 0.9;
+        }
+
+        #current_count {
+            flex: 0 0 auto;
+            color: var(--accent-color);
+            text-shadow:
+                0 0 22px color-mix(in srgb, var(--accent-color) 32%, transparent),
+                0 0 58px color-mix(in srgb, var(--accent-color) 12%, transparent);
+        }
+
+        .capacity span {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+            color: rgba(176,195,199,0.34);
+        }
+
+        .capacity-divider {
+            transform: translateY(0.03em);
+            font-size: 0.64em;
+            font-weight: 650;
+            color: rgba(176,195,199,0.28);
+        }
+
+        .capacity-max {
+            transform: translateY(0.03em);
+            font-size: 0.64em;
+            font-weight: 760;
+            color: rgba(176,195,199,0.42);
+        }
+
+        .capacity-meta {
+            margin-top: 24px;
+        }
+
+        .status-chip,
+        .chart-badge,
+        .alert-severity {
+            box-shadow: none;
+        }
+
+        .stats-grid > .stat-box:not(.capacity-card) {
+            display: flex;
+            min-height: 300px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+        }
+
+        .percent {
+            margin-bottom: 20px;
+            font-size: 36px;
+        }
+
+        .capacity-ring {
+            --ring-size: min(220px, 56vw);
+            width: var(--ring-size);
+            height: var(--ring-size);
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            background:
+                radial-gradient(circle at center, rgba(5,5,5,0.96) 0 56%, transparent 57%),
+                conic-gradient(var(--accent-color) var(--ring-percent), rgba(255,255,255,0.08) 0);
+            box-shadow:
+                0 0 28px color-mix(in srgb, var(--accent-color) 10%, transparent),
+                inset 0 0 34px rgba(255,255,255,0.025);
+            transition: 520ms ease;
+        }
+
+        .capacity-ring-inner {
+            width: 70%;
+            height: 70%;
+            display: grid;
+            place-items: center;
+            align-content: center;
+            border-radius: 999px;
+            background: rgba(8,8,8,0.88);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .capacity-ring-inner span {
+            color: rgba(244,251,252,0.94);
+            font-size: 34px;
+            font-weight: 850;
+            line-height: 1;
+        }
+
+        .capacity-ring-inner small {
+            margin-top: 6px;
+            color: rgba(176,195,199,0.46);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .progress {
+            width: min(220px, 100%);
+            height: 4px;
+            margin-top: 24px;
+            background: rgba(255,255,255,0.06);
+            border-color: transparent;
+        }
+
+        .progress-fill {
+            box-shadow: 0 0 14px rgba(34,211,238,0.18);
+        }
+
+        .status-card,
+        .alert-card {
+            margin-top: 26px;
+        }
+
+        .mini-kpi-grid {
+            gap: 18px;
+            margin-top: 26px;
+        }
+
+        .mini-kpi {
+            padding: 22px;
+            min-height: 132px;
+        }
+
+        .mini-kpi-icon {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.065);
+            box-shadow: none;
+        }
+
+        .mini-kpi-value {
+            margin-top: 10px;
+            font-size: 30px;
+            text-shadow: none;
+        }
+
+        .chart-card {
+            margin-top: 26px;
+            padding: 30px;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.44);
+        }
+
+        .settings-card {
+            margin-top: 26px;
+            padding: 30px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.026);
+            border: 1px solid rgba(255,255,255,0.065);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.44);
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .settings-title {
+            color: var(--text);
+            font-size: 24px;
+            font-weight: 850;
+            letter-spacing: 0;
+        }
+
+        .settings-subtitle {
+            margin-top: 4px;
+            color: rgba(176,195,199,0.50);
+            font-size: 14px;
+        }
+
+        .settings-form {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .settings-field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .settings-field span {
+            color: rgba(176,195,199,0.66);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .settings-field input {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.035);
+            color: var(--text);
+            font: inherit;
+            outline: none;
+        }
+
+        .settings-field input:focus {
+            border-color: color-mix(in srgb, var(--accent-color) 48%, rgba(255,255,255,0.12));
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 16%, transparent);
+        }
+
+        .settings-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 4px;
+        }
+
+        .settings-message {
+            min-height: 20px;
+            margin: 0;
+            color: rgba(176,195,199,0.68);
+            font-size: 14px;
+        }
+
+        .settings-message.is-error {
+            color: #fca5a5;
+        }
+
+        .settings-message.is-success {
+            color: #86efac;
+        }
+
+        .settings-save-button {
+            min-height: 44px;
+            padding: 10px 16px;
+            border: 1px solid color-mix(in srgb, var(--accent-color) 36%, rgba(255,255,255,0.14));
+            border-radius: 8px;
+            background: color-mix(in srgb, var(--accent-color) 18%, rgba(255,255,255,0.06));
+            color: var(--text);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .settings-save-button:disabled {
+            cursor: wait;
+            opacity: 0.6;
+        }
+
+        .member-access-card {
+            margin-top: 26px;
+            padding: 30px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.026);
+            border: 1px solid rgba(255,255,255,0.065);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.44);
+        }
+
+        .member-access-body {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .invite-code-display {
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid color-mix(in srgb, var(--accent-color) 28%, rgba(255,255,255,0.08));
+            background: rgba(255,255,255,0.035);
+            color: var(--text);
+            font-size: clamp(22px, 3vw, 34px);
+            font-weight: 850;
+            letter-spacing: 0;
+            word-break: break-word;
+        }
+
+        .members-card {
+            margin-top: 26px;
+            padding: 30px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.026);
+            border: 1px solid rgba(255,255,255,0.065);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.44);
+        }
+
+        .members-total {
+            margin-bottom: 16px;
+            color: rgba(244,251,252,0.86);
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .members-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .members-list li,
+        .members-empty {
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.065);
+            color: rgba(244,251,252,0.88);
+        }
+
+        .member-role {
+            color: rgba(176,195,199,0.68);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .member-details {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remove-member-button {
+            min-height: 32px;
+            padding: 6px 10px;
+            border: 1px solid rgba(248,113,113,0.26);
+            border-radius: 8px;
+            background: rgba(248,113,113,0.08);
+            color: #fca5a5;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .remove-member-button:disabled {
+            cursor: wait;
+            opacity: 0.62;
+        }
+
+        .member-role-select {
+            min-height: 32px;
+            padding: 6px 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.035);
+            color: var(--text);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .member-role-select:disabled {
+            cursor: wait;
+            opacity: 0.62;
+        }
+
+        .notification-card {
+            margin-top: 26px;
+            padding: 30px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.026);
+            border: 1px solid rgba(255,255,255,0.065);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.44);
+        }
+
+        .notification-form {
+            display: grid;
+            grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+            gap: 16px;
+            align-items: end;
+        }
+
+        .notification-select {
+            width: 100%;
+            min-height: 48px;
+            padding: 11px 13px;
+            border-radius: 8px;
+            border: 1px solid color-mix(in srgb, var(--accent-color) 42%, rgba(255,255,255,0.14));
+            background: rgba(255,255,255,0.08);
+            color: var(--text);
+            font: inherit;
+            font-weight: 800;
+            outline: none;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                0 0 0 1px rgba(255,255,255,0.025);
+        }
+
+        .notification-select::placeholder {
+            color: rgba(176,195,199,0.78);
+            font-weight: 700;
+        }
+
+        .notification-select:disabled {
+            cursor: not-allowed;
+            border-color: rgba(176,195,199,0.30);
+            background: rgba(255,255,255,0.055);
+            color: rgba(244,251,252,0.74);
+            opacity: 1;
+        }
+
+        .notification-help {
+            margin: -2px 0 0;
+            color: rgba(176,195,199,0.62);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .notification-current-status {
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 11px 13px;
+            border-radius: 8px;
+            border: 1px solid color-mix(in srgb, var(--accent-color) 28%, rgba(255,255,255,0.10));
+            background: rgba(255,255,255,0.045);
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 850;
+        }
+
+        .notification-off-field {
+            min-height: 48px;
+            align-content: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.045);
+        }
+
+        .notification-off-field input {
+            width: 18px;
+            min-height: 18px;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .notification-actions {
+            grid-column: 1 / -1;
+        }
+
+        .notifications-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .notifications-list li,
+        .notifications-empty {
+            display: grid;
+            gap: 6px;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.065);
+            color: rgba(244,251,252,0.88);
+        }
+
+        .notification-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            color: rgba(176,195,199,0.68);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+
+        .chart-frame {
+            background: rgba(255,255,255,0.018);
+            border-color: rgba(255,255,255,0.055);
+            box-shadow: none;
+        }
+
+        .chart-frame canvas {
+            filter: drop-shadow(0 0 7px rgba(34,211,238,0.08));
+        }
+
+        .hero-card:hover,
+        .chart-card:hover,
+        .settings-card:hover,
+        .member-access-card:hover,
+        .members-card:hover,
+        .stat-box:hover,
+        .status-card:hover,
+        .alert-card:hover,
+        .mini-kpi:hover,
+        .greeting-card:hover,
+        .best-time-widget:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255,255,255,0.10);
+            box-shadow:
+                0 34px 100px rgba(0,0,0,0.52),
+                0 0 22px rgba(34,211,238,0.045);
+        }
+
+        .ambient-light {
+            opacity: 0.24;
+            animation-duration: 42s;
+        }
+
+        .ambient-light.two {
+            opacity: 0.18;
+            animation-duration: 48s;
+        }
+
+        @media (max-width: 980px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .greeting-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .capacity-card {
+                min-height: 250px;
+                padding: 12px 0;
+            }
+
+            .capacity {
+                font-size: clamp(82px, 24vw, 132px);
+            }
+
+            .stats-grid > .stat-box:not(.capacity-card) {
+                min-height: 240px;
+            }
+
+            .mini-kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-form {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .member-access-body {
+                grid-template-columns: 1fr;
+            }
+
+            .notification-form {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
-<body>
+<body data-status="{{ status }}">
+
+<div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="false"></div>
+<div class="ambient-layer" aria-hidden="true">
+    <span class="ambient-light one"></span>
+    <span class="ambient-light two"></span>
+</div>
+
+<div class="app-shell">
+<aside class="sidebar" aria-label="Dashboard navigation">
+    <div class="sidebar-brand">
+        <div class="sidebar-brand-mark">U</div>
+        <div class="sidebar-brand-copy">
+            <strong>UTZ OS</strong>
+            <span>Realtime Control</span>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a class="sidebar-link is-active" href="#">
+            <span>01</span>
+            <span>Dashboard</span>
+        </a>
+        <a class="sidebar-link" href="#analytics">
+            <span>02</span>
+            <span>Analytics</span>
+        </a>
+        <a class="sidebar-link" href="#live-status">
+            <span>03</span>
+            <span>Live Status</span>
+        </a>
+        <a class="sidebar-link" href="#capacity-alert">
+            <span>04</span>
+            <span>Alerts</span>
+        </a>
+        <a class="sidebar-link" href="#manager-settings">
+            <span>05</span>
+            <span>Settings</span>
+        </a>
+        <a class="sidebar-link" href="#member-access">
+            <span>06</span>
+            <span>Access</span>
+        </a>
+        <a class="sidebar-link" href="#members">
+            <span>07</span>
+            <span>Members</span>
+        </a>
+        <a class="sidebar-link" href="#activity-log">
+            <span>08</span>
+            <span>Activity Log</span>
+        </a>
+        <a class="sidebar-link" href="#push-dashboard">
+            <span>09</span>
+            <span>Push</span>
+        </a>
+        <a class="sidebar-link" href="#device-management">
+            <span>10</span>
+            <span>Devices</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-system">
+        <span class="sidebar-section-title">System</span>
+        <div class="system-row">
+            <span>Stream</span>
+            <strong>ACTIVE</strong>
+        </div>
+        <div class="system-row">
+            <span>Tenant</span>
+            <strong id="sidebar-gym-name">{{ name }}</strong>
+        </div>
+    </div>
+</aside>
 
 <main class="dashboard">
     {% set capacity_percent = (((current / max) * 100) | round(0)) if max else 0 %}
 
     <div class="topbar">
         <div class="brand">
-            <div class="logo">U</div>
+            <div class="logo" id="gym-logo" aria-hidden="true"></div>
             <div class="brand-text">
-                <strong>UTZ Capacity OS</strong>
+                <strong id="header-gym-name">{{ name }}</strong>
                 <span>Realtime Gym Intelligence</span>
             </div>
         </div>
 
-        <div class="live-pill">
-            <span class="live-dot"></span>
-            Live System Active
+        <div class="topbar-actions">
+            <div class="live-pill" id="connection-status">
+                <span class="live-dot"></span>
+                <span id="connection-label">LIVE</span>
+            </div>
+            <button class="logout-button" id="logout-button" type="button">Logout</button>
         </div>
     </div>
 
+    <section class="greeting-grid" aria-label="Daily intelligence briefing">
+        <div class="greeting-card">
+            <div class="greeting-eyebrow">Welcome back</div>
+            <div class="greeting-title">Realtime gym intelligence active</div>
+            <div class="greeting-copy">Consistency compounds.</div>
+        </div>
+
+        <div class="best-time-widget">
+            <div>
+                <div class="best-time-label">Best Training Time</div>
+                <div class="best-time-value" id="best-time-value">--:--</div>
+            </div>
+            <div class="best-time-note" id="best-time-note">Prediction module ready</div>
+        </div>
+
+        <div class="best-time-widget">
+            <div>
+                <div class="best-time-label">Peak Hour</div>
+                <div class="best-time-value" id="peak-hour-value">--:--</div>
+            </div>
+            <div class="best-time-note" id="peak-hour-note">Analytics module ready</div>
+        </div>
+    </section>
+
     <section class="hero-card">
-        <h1 class="gym-name">{{ name }}</h1>
+        <h1 class="gym-name" id="hero-gym-name">{{ name }}</h1>
         <div class="subtitle">
             Live-Auslastung deines Studios in Echtzeit.
         </div>
 
         <div class="stats-grid">
-            <div class="stat-box">
+            <div class="stat-box capacity-card">
                 <div class="label">Aktuelle Kapazität</div>
                 <div class="capacity">
-                    {{ current }} <span>/ {{ max }}</span>
+                    <span id="current_count">{{ current }}</span>
+                    <span class="capacity-divider">/</span>
+                    <span class="capacity-max" id="max-capacity">{{ max }}</span>
+                </div>
+                <div class="capacity-meta">
+                    <span class="status-chip" id="capacity-status-chip">{{ status }}</span>
+                    <span>Realtime occupancy</span>
                 </div>
             </div>
 
             <div class="stat-box">
                 <div class="label">Auslastung</div>
-                <div class="percent">
+                <div class="percent" id="capacity-percent">
                     {{ capacity_percent }}%
                 </div>
 
+                <div
+                    class="capacity-ring"
+                    id="capacity-ring"
+                    style="--ring-percent: {{ capacity_percent }}%;"
+                    aria-label="Capacity utilization"
+                >
+                    <div class="capacity-ring-inner">
+                        <span id="ring-percent-label">{{ capacity_percent }}%</span>
+                        <small>Load</small>
+                    </div>
+                </div>
+
                 <div class="progress">
-                    <div class="progress-fill" style="--capacity-percent: {{ capacity_percent }}%;"></div>
+                    <div
+                        class="progress-fill"
+                        id="capacity-progress"
+                        style="--capacity-percent: {{ capacity_percent }}%;"
+                    ></div>
                 </div>
             </div>
         </div>
 
-        <div class="status-card">
+        <div class="status-card" id="live-status">
             <div class="status-left">
                 <div class="status-orb"></div>
                 <div>
-                    <div class="status-title">{{ status }}</div>
+                    <div class="status-title" id="capacity-status">{{ status }}</div>
                     <div class="status-subtitle">
                         Besucherfluss stabil · Kapazität wird live überwacht
                     </div>
@@ -384,12 +2587,1576 @@
             </div>
 
             <div class="refresh">
-                Auto-refresh alle 5 Sekunden
+                Socket.IO verbunden
+            </div>
+        </div>
+
+        <div class="alert-card" id="capacity-alert" data-severity="info">
+            <div class="alert-header">
+                <div class="alert-title">Capacity Alert</div>
+                <div class="alert-severity" id="alert-severity">info</div>
+            </div>
+
+            <div class="alert-message" id="alert-message">
+                Gym occupancy is normal
+            </div>
+
+            <div class="alert-metrics">
+                <div class="alert-metric">
+                    <span>Status</span>
+                    <strong id="alert-status">{{ status }}</strong>
+                </div>
+                <div class="alert-metric">
+                    <span>Utilization</span>
+                    <strong id="alert-utilization">{{ capacity_percent }}%</strong>
+                </div>
             </div>
         </div>
     </section>
 
-</main>
+    <section class="mini-kpi-grid" aria-label="Realtime gym intelligence">
+        <div class="mini-kpi">
+            <span class="mini-kpi-icon">IN</span>
+            <div class="mini-kpi-label">Entries Today</div>
+            <div class="mini-kpi-value" id="entries-today">0</div>
+        </div>
+        <div class="mini-kpi">
+            <span class="mini-kpi-icon">OUT</span>
+            <div class="mini-kpi-label">Exits Today</div>
+            <div class="mini-kpi-value" id="exits-today">0</div>
+        </div>
+        <div class="mini-kpi">
+            <span class="mini-kpi-icon">PK</span>
+            <div class="mini-kpi-label">Peak Hour</div>
+            <div class="mini-kpi-value" id="peak-hour">--</div>
+        </div>
+        <div class="mini-kpi">
+            <span class="mini-kpi-icon">TR</span>
+            <div class="mini-kpi-label">Current Trend</div>
+            <div class="mini-kpi-value" id="current-trend">Stable</div>
+        </div>
+    </section>
 
+    <section class="chart-card" id="analytics">
+        <div class="chart-header">
+            <div>
+                <div class="chart-title">Historical Occupancy</div>
+                <div class="chart-subtitle">
+                    Besucherentwicklung aus gespeicherten Check-ins und Check-outs
+                </div>
+            </div>
+
+            <div class="chart-badge">Live Analytics</div>
+        </div>
+
+        <div class="chart-frame">
+            <!-- Canvas-Element, in das Chart.js den Live-Analytics Line Chart rendert. -->
+            <canvas id="occupancyChart"></canvas>
+            <!-- Hinweis fuer den Fall, dass der History-Endpoint noch keine Daten liefert. -->
+            <div class="chart-empty" id="chart-empty">
+                Noch keine historischen Daten vorhanden.
+            </div>
+        </div>
+    </section>
+
+    <section class="chart-card" id="push-dashboard" data-role-section="manager">
+        <div class="chart-header">
+            <div>
+                <div class="chart-title">Push Dashboard</div>
+                <div class="chart-subtitle" id="push-dashboard-status">Push delivery overview</div>
+            </div>
+
+            <div class="chart-badge">Manager</div>
+        </div>
+
+        <div class="alert-metrics">
+            <div class="alert-metric">
+                <span>Registered Devices</span>
+                <strong id="push-registered-devices">0</strong>
+            </div>
+            <div class="alert-metric">
+                <span>Pending Pushes</span>
+                <strong id="push-pending-notifications">0</strong>
+            </div>
+            <div class="alert-metric">
+                <span>Sent Pushes</span>
+                <strong id="push-sent-notifications">0</strong>
+            </div>
+            <div class="alert-metric">
+                <span>Failed Pushes</span>
+                <strong id="push-failed-notifications">0</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="settings-card" id="manager-settings" data-role-section="manager">
+        <div class="settings-header">
+            <div>
+                <div class="settings-title">Manager Settings</div>
+                <div class="settings-subtitle">Gym branding and capacity controls</div>
+            </div>
+            <div class="chart-badge">Manager</div>
+        </div>
+
+        <form class="settings-form" id="manager-settings-form">
+            <label class="settings-field">
+                <span>Max Capacity</span>
+                <input id="settings-max-capacity" name="max_capacity" type="number" min="1" step="1" required>
+            </label>
+
+            <label class="settings-field">
+                <span>Logo URL</span>
+                <input id="settings-logo-url" name="logo_url" type="url" placeholder="https://example.com/logo.png">
+            </label>
+
+            <label class="settings-field">
+                <span>Primary Color</span>
+                <input id="settings-primary-color" name="primary_color" type="text" placeholder="#22d3ee">
+            </label>
+
+            <div class="settings-actions">
+                <p class="settings-message" id="settings-message" aria-live="polite"></p>
+                <button class="settings-save-button" id="settings-save-button" type="submit">Save Settings</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="member-access-card" id="member-access" data-role-section="manager">
+        <div class="settings-header">
+            <div>
+                <div class="settings-title">Member Access</div>
+                <div class="settings-subtitle">Invite members to this gym</div>
+            </div>
+            <div class="chart-badge">Invite Code</div>
+        </div>
+
+        <div class="member-access-body">
+            <div>
+                <div class="settings-field">
+                    <span>Current Invite Code</span>
+                    <div class="invite-code-display" id="invite-code-display">Loading...</div>
+                </div>
+                <p class="settings-message" id="member-access-message" aria-live="polite"></p>
+            </div>
+
+            <button class="settings-save-button" id="generate-invite-code-button" type="button">
+                Generate New Invite Code
+            </button>
+        </div>
+    </section>
+
+    <section class="members-card" id="members" data-role-section="staff">
+        <div class="settings-header">
+            <div>
+                <div class="settings-title">Members</div>
+                <div class="settings-subtitle">Current gym user access</div>
+            </div>
+            <div class="chart-badge">Roster</div>
+        </div>
+
+        <div class="members-total" id="members-total">Total Members: 0</div>
+        <ul class="members-list" id="members-list">
+            <li class="members-empty">Loading...</li>
+        </ul>
+    </section>
+
+    <section class="members-card" id="activity-log" data-role-section="manager">
+        <div class="settings-header">
+            <div>
+                <div class="settings-title">Activity Log</div>
+                <div class="settings-subtitle">Recent management actions</div>
+            </div>
+            <div class="chart-badge">Audit</div>
+        </div>
+
+        <ul class="members-list" id="activity-log-list">
+            <li class="members-empty">Loading...</li>
+        </ul>
+    </section>
+
+    <section class="notification-card" id="notification-settings">
+        <div class="settings-header">
+            <div>
+                <div class="settings-title">Notification Settings</div>
+                <div class="settings-subtitle">Personal capacity alert preference</div>
+            </div>
+            <div class="chart-badge">Personal</div>
+        </div>
+
+        <form class="notification-form" id="notification-settings-form">
+            <label class="settings-field">
+                <span>Notify me when occupancy is below</span>
+                <input
+                    class="notification-select"
+                    id="notification-threshold-input"
+                    type="number"
+                    min="1"
+                    max="{{ max }}"
+                    step="1"
+                    placeholder="Example: 40"
+                >
+                <p class="notification-help" id="notification-threshold-help">
+                    Choose a people count between 1 and {{ max }}. Example: 40 means you get notified when fewer than 40 people are in the gym.
+                </p>
+            </label>
+            <label class="settings-field notification-off-field">
+                <span>Turn notifications off</span>
+                <input id="notification-threshold-off" type="checkbox">
+            </label>
+            <p class="notification-current-status" id="notification-summary" aria-live="polite">
+                Current setting: Loading...
+            </p>
+            <div class="settings-actions notification-actions">
+                <p class="settings-message" id="notification-message" aria-live="polite"></p>
+                <button class="settings-save-button" id="notification-save-button" type="submit">
+                    Save Notification Setting
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="members-card" id="device-management" data-role-section="manager">
+        <div class="settings-header">
+            <div>
+                <div class="settings-title">Device Management</div>
+                <div class="settings-subtitle" id="device-management-status">Registered push devices</div>
+            </div>
+            <div class="chart-badge">Manager</div>
+        </div>
+
+        <div class="members-total" id="devices-total">Total Devices: 0</div>
+        <ul class="members-list" id="devices-list">
+            <li class="members-empty">Loading...</li>
+        </ul>
+    </section>
+
+    <section class="notification-card" id="notifications">
+        <div class="settings-header">
+            <div>
+                <div class="settings-title">Notifications</div>
+                <div class="settings-subtitle">Your latest capacity alerts</div>
+            </div>
+            <div class="chart-badge">Center</div>
+        </div>
+
+        <ul class="notifications-list" id="notifications-list">
+            <li class="notifications-empty">Loading...</li>
+        </ul>
+    </section>
+
+</main>
+</div>
+
+<!-- Offizieller Socket.IO Client per CDN fuer Live-Events vom Flask-SocketIO Backend. -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<!-- Chart.js wird per CDN eingebunden, damit der Line Chart direkt im Template genutzt werden kann. -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Gym-Name aus Jinja sicher als JavaScript-String bereitstellen.
+    let dashboardGym = {{ name | tojson }};
+
+    // Bestehende Socket.IO-Verbindung fuer Live-Updates weiterverwenden.
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        console.warn("No JWT token found in localStorage; redirecting to login page.");
+        window.location.href = "/login-page";
+        throw new Error("Missing JWT token for dashboard Socket.IO connection.");
+    }
+
+    const socket = io({
+        auth: {
+            token
+        }
+    });
+
+    function decodeJwtPayload(jwtToken) {
+        try {
+            const payload = jwtToken.split(".")[1];
+            const normalizedPayload = payload
+                .replace(/-/g, "+")
+                .replace(/_/g, "/")
+                .padEnd(Math.ceil(payload.length / 4) * 4, "=");
+            const decodedPayload = atob(normalizedPayload);
+
+            return JSON.parse(decodedPayload);
+        } catch (error) {
+            console.warn("Could not decode JWT payload:", error);
+            return {};
+        }
+    }
+
+    function getCurrentRole() {
+        const tokenRole = decodeJwtPayload(token).role;
+        const storedRole = localStorage.getItem("role");
+
+        return normalizeRole(tokenRole || storedRole || "member");
+    }
+
+    function normalizeRole(role) {
+        if (["admin", "owner"].includes(role)) {
+            return "manager";
+        }
+
+        return role;
+    }
+
+    const currentRole = getCurrentRole();
+    const rolePermissions = {
+        canManageGym: ["manager"].includes(currentRole),
+        canViewMembers: ["manager", "trainer"].includes(currentRole),
+        canToggleMemberActive: ["manager", "trainer"].includes(currentRole),
+        canViewActivityLog: ["manager"].includes(currentRole),
+    };
+    const canManageGym = rolePermissions.canManageGym;
+    const canViewMembers = rolePermissions.canViewMembers;
+    const canToggleMemberActive = rolePermissions.canToggleMemberActive;
+    const canViewActivityLog = rolePermissions.canViewActivityLog;
+    document.body.dataset.role = currentRole;
+
+    function setSectionVisibility(selector, isVisible) {
+        const elements = document.querySelectorAll(selector);
+
+        elements.forEach((element) => {
+            element.classList.toggle("is-hidden", !isVisible);
+        });
+    }
+
+    function applyRoleBasedDashboard() {
+        setSectionVisibility('[data-role-section="manager"]', canManageGym);
+        setSectionVisibility("#members", canViewMembers);
+        setSectionVisibility('.sidebar-link[href="#manager-settings"]', canManageGym);
+        setSectionVisibility('.sidebar-link[href="#member-access"]', canManageGym);
+        setSectionVisibility('.sidebar-link[href="#push-dashboard"]', canManageGym);
+        setSectionVisibility('.sidebar-link[href="#device-management"]', canManageGym);
+        setSectionVisibility('.sidebar-link[href="#members"]', canViewMembers);
+        setSectionVisibility('.sidebar-link[href="#activity-log"]', canViewActivityLog);
+    }
+
+    applyRoleBasedDashboard();
+
+    document.getElementById("logout-button").addEventListener("click", () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("gym_id");
+        localStorage.removeItem("role");
+        window.location.href = "/login-page";
+    });
+
+    document.getElementById("manager-settings-form").addEventListener("submit", saveManagerSettings);
+    document.getElementById("generate-invite-code-button").addEventListener("click", generateInviteCode);
+    document.getElementById("notification-settings-form").addEventListener("submit", saveNotificationPreference);
+    document.getElementById("notification-threshold-input").addEventListener("input", updateNotificationPreferenceDraftUI);
+    document.getElementById("notification-threshold-off").addEventListener("change", updateNotificationPreferenceDraftUI);
+
+    // Chart-Instanz global halten, damit sie nach Socket-Events aktualisiert werden kann.
+    let occupancyChart = null;
+
+    // Begrenzung schuetzt den Chart vor zu vielen Punkten in langen Dashboard-Sessions.
+    const maxLiveChartPoints = 60;
+
+    let lastKnownCount = {{ current }};
+
+    // ISO-Zeitstempel aus dem Backend in kurze deutsche Uhrzeiten verwandeln.
+    function formatTimestamp(timestamp) {
+        return new Date(timestamp).toLocaleTimeString("de-DE", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    }
+
+    function getAccentColor() {
+        return getComputedStyle(document.documentElement).getPropertyValue("--accent-color").trim() || "#67e8f9";
+    }
+
+    function getGymMaxCapacity(gym) {
+        return gym.max ?? gym.max_capacity;
+    }
+
+    function populateManagerSettings(gym) {
+        if (!gym) {
+            return;
+        }
+
+        const maxCapacity = getGymMaxCapacity(gym);
+
+        if (maxCapacity !== undefined && maxCapacity !== null) {
+            document.getElementById("settings-max-capacity").value = maxCapacity;
+        }
+
+        document.getElementById("settings-logo-url").value = gym.logo_url || "";
+        document.getElementById("settings-primary-color").value = gym.primary_color || "";
+    }
+
+    function populateMemberAccess(gym) {
+        if (!gym) {
+            return;
+        }
+
+        document.getElementById("invite-code-display").textContent = gym.invite_code || "No invite code set";
+    }
+
+    function showSettingsMessage(message, tone = "success") {
+        const messageElement = document.getElementById("settings-message");
+
+        messageElement.textContent = message;
+        messageElement.classList.toggle("is-error", tone === "error");
+        messageElement.classList.toggle("is-success", tone === "success");
+    }
+
+    function showMemberAccessMessage(message, tone = "success") {
+        const messageElement = document.getElementById("member-access-message");
+
+        messageElement.textContent = message;
+        messageElement.classList.toggle("is-error", tone === "error");
+        messageElement.classList.toggle("is-success", tone === "success");
+    }
+
+    function showNotificationMessage(message, tone = "success") {
+        const messageElement = document.getElementById("notification-message");
+
+        messageElement.textContent = message;
+        messageElement.classList.toggle("is-error", tone === "error");
+        messageElement.classList.toggle("is-success", tone === "success");
+    }
+
+    function getNotificationMaxCapacity() {
+        return Number(document.getElementById("max-capacity").textContent);
+    }
+
+    function updateNotificationSummary(threshold) {
+        const summaryElement = document.getElementById("notification-summary");
+
+        if (!threshold) {
+            summaryElement.textContent = "Current setting: Not set";
+            return;
+        }
+
+        summaryElement.textContent = threshold === "off"
+            ? "Current setting: OFF"
+            : `Current setting: ${threshold} people`;
+    }
+
+    function updateNotificationPreferenceDraftUI() {
+        const inputElement = document.getElementById("notification-threshold-input");
+        const offElement = document.getElementById("notification-threshold-off");
+        const threshold = inputElement.value.trim();
+
+        inputElement.disabled = offElement.checked;
+
+        if (offElement.checked) {
+            updateNotificationSummary("off");
+            return;
+        }
+
+        if (!threshold) {
+            updateNotificationSummary("");
+            return;
+        }
+
+        updateNotificationSummary(threshold);
+    }
+
+    function refreshNotificationPreferenceUI(notificationThreshold) {
+        const inputElement = document.getElementById("notification-threshold-input");
+        const offElement = document.getElementById("notification-threshold-off");
+        const helpElement = document.getElementById("notification-threshold-help");
+        const maxCapacity = getNotificationMaxCapacity();
+        const threshold = notificationThreshold || "off";
+
+        inputElement.max = String(maxCapacity);
+        offElement.checked = threshold === "off";
+        inputElement.disabled = offElement.checked;
+        inputElement.value = threshold === "off" ? "" : threshold;
+        helpElement.textContent = `Choose a people count between 1 and ${maxCapacity}. Example: 40 means you get notified when fewer than 40 people are in the gym.`;
+        updateNotificationSummary(threshold);
+    }
+
+    function populateNotificationPreference(notificationThreshold) {
+        refreshNotificationPreferenceUI(notificationThreshold);
+    }
+
+    function renderNotifications(notifications) {
+        const listElement = document.getElementById("notifications-list");
+
+        if (notifications.length === 0) {
+            listElement.innerHTML = '<li class="notifications-empty">No notifications yet</li>';
+            return;
+        }
+
+        listElement.replaceChildren(
+            ...notifications.map((notification) => {
+                const item = document.createElement("li");
+                const message = document.createElement("span");
+                const meta = document.createElement("span");
+                const createdAt = new Date(notification.created_at).toLocaleString("de-DE", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                });
+
+                message.textContent = notification.message;
+                meta.className = "notification-meta";
+                meta.textContent = `${createdAt} · ${notification.is_read ? "read" : "unread"}`;
+                item.append(message, meta);
+
+                return item;
+            })
+        );
+    }
+
+    function renderDevices(devices) {
+        const totalElement = document.getElementById("devices-total");
+        const listElement = document.getElementById("devices-list");
+        const statusElement = document.getElementById("device-management-status");
+
+        totalElement.textContent = `Total Devices: ${devices.length}`;
+        statusElement.textContent = "Registered push devices";
+
+        if (devices.length === 0) {
+            listElement.innerHTML = '<li class="members-empty">No devices registered yet</li>';
+            return;
+        }
+
+        listElement.replaceChildren(
+            ...devices.map((device) => {
+                const item = document.createElement("li");
+                const deviceId = document.createElement("span");
+                const details = document.createElement("span");
+                const name = document.createElement("span");
+                const platform = document.createElement("span");
+                const lastSeen = document.createElement("span");
+                const pushEnabled = document.createElement("span");
+                const status = document.createElement("span");
+                const health = document.createElement("span");
+                const lastSeenLabel = device.last_seen
+                    ? new Date(device.last_seen).toLocaleString("de-DE", {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                    })
+                    : "Unknown";
+
+                deviceId.textContent = `Device ID: ${device.id}`;
+                details.className = "member-details";
+                name.textContent = device.device_display_name || "Unknown Device";
+                platform.textContent = `Platform: ${(device.platform || "unknown").toUpperCase()}`;
+                lastSeen.textContent = `Last Seen: ${lastSeenLabel}`;
+                pushEnabled.textContent = `Push Enabled: ${device.push_enabled ? "Yes" : "No"}`;
+                status.textContent = `Status: ${device.status}`;
+                health.textContent = `Health: ${device.device_health || "UNKNOWN"}`;
+                details.append(platform, lastSeen, pushEnabled, status, health);
+                item.append(deviceId, details);
+                item.prepend(name);
+
+                return item;
+            })
+        );
+    }
+
+    function showDevicesUnavailable() {
+        document.getElementById("device-management-status").textContent = "Devices unavailable";
+    }
+
+    function renderPushDashboard(stats) {
+        document.getElementById("push-registered-devices").textContent = stats.registered_devices ?? 0;
+        document.getElementById("push-pending-notifications").textContent = stats.pending_notifications ?? 0;
+        document.getElementById("push-sent-notifications").textContent = stats.sent_notifications ?? 0;
+        document.getElementById("push-failed-notifications").textContent = stats.failed_notifications ?? 0;
+        document.getElementById("push-dashboard-status").textContent = "Push delivery overview";
+    }
+
+    function showPushDashboardUnavailable() {
+        document.getElementById("push-dashboard-status").textContent = "Push dashboard unavailable";
+    }
+
+    async function loadPushDashboard() {
+        if (!canManageGym) {
+            return;
+        }
+
+        try {
+            const response = await fetch("/push/dashboard", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Push dashboard request failed with status ${response.status}`);
+            }
+
+            renderPushDashboard(data);
+        } catch (error) {
+            console.error("Could not load push dashboard:", error);
+            showPushDashboardUnavailable();
+        }
+    }
+
+    async function loadDevices() {
+        if (!canManageGym) {
+            return;
+        }
+
+        try {
+            const response = await fetch("/devices", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Devices request failed with status ${response.status}`);
+            }
+
+            renderDevices(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Could not load devices:", error);
+            showDevicesUnavailable();
+        }
+    }
+
+    async function loadNotifications() {
+        try {
+            const response = await fetch("/me/notifications", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Notifications request failed with status ${response.status}`);
+            }
+
+            renderNotifications(data.notifications || []);
+        } catch (error) {
+            console.error("Could not load notifications:", error);
+            renderNotifications([]);
+        }
+    }
+
+    async function loadNotificationPreference() {
+        try {
+            const response = await fetch("/me/notification-preference", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Notification request failed with status ${response.status}`);
+            }
+
+            refreshNotificationPreferenceUI(data.notification_threshold_count || data.notification_threshold);
+        } catch (error) {
+            console.error("Could not load notification preference:", error);
+            showNotificationMessage("Notification settings could not be loaded.", "error");
+        }
+    }
+
+    async function saveNotificationPreference(event) {
+        if (event) {
+            event.preventDefault();
+        }
+
+        const inputElement = document.getElementById("notification-threshold-input");
+        const offElement = document.getElementById("notification-threshold-off");
+        const saveButton = document.getElementById("notification-save-button");
+        const maxCapacity = getNotificationMaxCapacity();
+        const threshold = offElement.checked ? "off" : inputElement.value.trim();
+
+        if (!offElement.checked) {
+            const thresholdCount = Number(threshold);
+
+            if (!Number.isInteger(thresholdCount) || thresholdCount < 1 || thresholdCount > maxCapacity) {
+                showNotificationMessage(`Enter a valid number between 1 and ${maxCapacity}.`, "error");
+                inputElement.focus();
+                return;
+            }
+        }
+
+        inputElement.disabled = true;
+        offElement.disabled = true;
+        saveButton.disabled = true;
+        showNotificationMessage("");
+
+        try {
+            const response = await fetch("/me/notification-preference", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    notification_threshold_count: threshold,
+                }),
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Notification request failed with status ${response.status}`);
+            }
+
+            refreshNotificationPreferenceUI(data.notification_threshold_count || data.notification_threshold);
+            showNotificationMessage("Notification settings saved.", "success");
+        } catch (error) {
+            console.error("Could not save notification preference:", error);
+            showNotificationMessage(error.message || "Notification settings could not be saved.", "error");
+            loadNotificationPreference();
+        } finally {
+            offElement.disabled = false;
+            inputElement.disabled = offElement.checked;
+            saveButton.disabled = false;
+        }
+    }
+
+    function renderMembers(members) {
+        const totalElement = document.getElementById("members-total");
+        const listElement = document.getElementById("members-list");
+
+        totalElement.textContent = `Total Members: ${members.length}`;
+
+        if (members.length === 0) {
+            listElement.innerHTML = '<li class="members-empty">No members found</li>';
+            return;
+        }
+
+        listElement.replaceChildren(
+            ...members.map((member) => {
+                const item = document.createElement("li");
+                const username = document.createElement("span");
+                const details = document.createElement("span");
+
+                username.textContent = member.username;
+                details.className = "member-details";
+
+                if (canManageGym && ["member", "trainer"].includes(member.role)) {
+                    const roleSelect = document.createElement("select");
+
+                    roleSelect.className = "member-role-select";
+                    ["member", "trainer"].forEach((roleOption) => {
+                        const option = document.createElement("option");
+
+                        option.value = roleOption;
+                        option.textContent = roleOption;
+                        option.selected = roleOption === member.role;
+                        roleSelect.append(option);
+                    });
+                    roleSelect.addEventListener("change", () => {
+                        updateMemberRole(member.username, roleSelect.value, roleSelect);
+                    });
+                    details.append(roleSelect);
+                } else {
+                    const role = document.createElement("span");
+
+                    role.textContent = `(${member.role})`;
+                    role.className = "member-role";
+                    details.append(role);
+                }
+
+                const activeState = document.createElement("span");
+                activeState.textContent = member.is_active ? "Active" : "Inactive";
+                activeState.className = "member-role";
+                details.append(activeState);
+
+                if (canToggleMemberActive) {
+                    const activeButton = document.createElement("button");
+                    const action = member.is_active ? "deactivate" : "activate";
+
+                    activeButton.type = "button";
+                    activeButton.className = "remove-member-button";
+                    activeButton.textContent = member.is_active ? "Deactivate" : "Activate";
+                    activeButton.addEventListener("click", () => {
+                        updateMemberActiveState(member.username, action, activeButton);
+                    });
+                    details.append(activeButton);
+                }
+
+                if (canManageGym && member.username !== localStorage.getItem("username")) {
+                    const removeButton = document.createElement("button");
+
+                    removeButton.type = "button";
+                    removeButton.className = "remove-member-button";
+                    removeButton.textContent = "Remove";
+                    removeButton.addEventListener("click", () => removeMember(member.username, removeButton));
+                    details.append(removeButton);
+                }
+
+                item.append(username, details);
+
+                return item;
+            })
+        );
+    }
+
+    function renderActivityLog(logs) {
+        const listElement = document.getElementById("activity-log-list");
+
+        if (logs.length === 0) {
+            listElement.innerHTML = '<li class="members-empty">No activity yet</li>';
+            return;
+        }
+
+        listElement.replaceChildren(
+            ...logs.map((log) => {
+                const item = document.createElement("li");
+                const summary = document.createElement("span");
+                const details = document.createElement("span");
+                const createdAt = new Date(log.created_at).toLocaleString("de-DE", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                });
+
+                summary.textContent = `${createdAt} · ${log.actor_username} · ${log.action}`;
+                details.className = "member-details";
+                details.textContent = `${log.target_username} · ${log.details || ""}`;
+                item.append(summary, details);
+
+                return item;
+            })
+        );
+    }
+
+    async function updateMemberRole(username, newRole, selectElement) {
+        if (!canManageGym) {
+            return;
+        }
+
+        selectElement.disabled = true;
+
+        try {
+            const response = await fetch(`/users/${encodeURIComponent(username)}/role`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ role: newRole }),
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Role request failed with status ${response.status}`);
+            }
+
+            showToast("Role updated", `${username} is now ${data.role}`, "success");
+            loadGymMembers();
+            loadActivityLog();
+        } catch (error) {
+            console.error("Could not update member role:", error);
+            showToast("Role could not be updated", error.message, "error");
+            loadGymMembers();
+        }
+    }
+
+    async function removeMember(username, button) {
+        if (!canManageGym) {
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Removing...";
+
+        try {
+            const response = await fetch(`/users/${encodeURIComponent(username)}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Remove request failed with status ${response.status}`);
+            }
+
+            showToast("Member removed", username, "success");
+            loadGymMembers();
+        } catch (error) {
+            console.error("Could not remove member:", error);
+            showToast("Member could not be removed", error.message, "error");
+            button.disabled = false;
+            button.textContent = "Remove";
+        }
+    }
+
+    async function updateMemberActiveState(username, action, button) {
+        if (!canToggleMemberActive) {
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = action === "activate" ? "Activating..." : "Deactivating...";
+
+        try {
+            const response = await fetch(`/users/${encodeURIComponent(username)}/${action}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Member request failed with status ${response.status}`);
+            }
+
+            showToast(data.message, username, "success");
+            loadGymMembers();
+            loadActivityLog();
+        } catch (error) {
+            console.error("Could not update member active state:", error);
+            showToast("Member status could not be updated", error.message, "error");
+            loadGymMembers();
+        }
+    }
+
+    async function loadGymMembers() {
+        try {
+            const response = await fetch(`/gyms/${encodeURIComponent(dashboardGym)}/members`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Members request failed with status ${response.status}`);
+            }
+
+            renderMembers(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Could not load gym members:", error);
+            renderMembers([]);
+        }
+    }
+
+    async function loadActivityLog() {
+        if (!canViewActivityLog) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/gyms/${encodeURIComponent(dashboardGym)}/activity-log`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Activity log request failed with status ${response.status}`);
+            }
+
+            renderActivityLog(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Could not load activity log:", error);
+            renderActivityLog([]);
+        }
+    }
+
+    function applyGymBranding(gym) {
+        if (!gym) {
+            return;
+        }
+
+        const gymName = gym.name || dashboardGym;
+        const logoElement = document.getElementById("gym-logo");
+        const maxCapacity = getGymMaxCapacity(gym);
+
+        dashboardGym = gymName;
+        document.getElementById("header-gym-name").textContent = gymName;
+        document.getElementById("hero-gym-name").textContent = gymName;
+        document.getElementById("sidebar-gym-name").textContent = gymName;
+        populateManagerSettings(gym);
+        populateMemberAccess(gym);
+
+        if (maxCapacity !== undefined && maxCapacity !== null) {
+            updateCapacityUi({
+                current_count: gym.current ?? lastKnownCount,
+                max: maxCapacity,
+                status: gym.status || document.getElementById("capacity-status").textContent,
+            });
+        }
+
+        if (gym.logo_url) {
+            const logoImage = document.createElement("img");
+            logoImage.src = gym.logo_url;
+            logoImage.alt = `${gymName} Logo`;
+            logoElement.replaceChildren(logoImage);
+            logoElement.classList.add("has-image");
+            logoElement.removeAttribute("aria-hidden");
+        } else {
+            logoElement.replaceChildren();
+            logoElement.classList.remove("has-image");
+            logoElement.setAttribute("aria-hidden", "true");
+        }
+
+        if (gym.primary_color && CSS.supports("color", gym.primary_color)) {
+            document.documentElement.style.setProperty("--accent-color", gym.primary_color);
+
+            if (occupancyChart) {
+                const accentColor = getAccentColor();
+                occupancyChart.data.datasets[0].borderColor = accentColor;
+                occupancyChart.data.datasets[0].pointBorderColor = accentColor;
+                occupancyChart.update();
+            }
+        }
+    }
+
+    async function loadGymBranding() {
+        try {
+            const response = await fetch("/my-gym", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Gym branding request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            applyGymBranding(data.gym);
+        } catch (error) {
+            console.error("Could not load gym branding:", error);
+            showSettingsMessage("Gym settings could not be loaded.", "error");
+            showMemberAccessMessage("Invite code could not be loaded.", "error");
+        }
+    }
+
+    async function saveManagerSettings(event) {
+        event.preventDefault();
+
+        if (!canManageGym) {
+            return;
+        }
+
+        const saveButton = document.getElementById("settings-save-button");
+        const payload = {
+            max_capacity: Number(document.getElementById("settings-max-capacity").value),
+            logo_url: document.getElementById("settings-logo-url").value.trim(),
+            primary_color: document.getElementById("settings-primary-color").value.trim(),
+        };
+
+        showSettingsMessage("");
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+
+        try {
+            const response = await fetch(`/gyms/${encodeURIComponent(dashboardGym)}/settings`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Settings request failed with status ${response.status}`);
+            }
+
+            applyGymBranding(data);
+            showSettingsMessage("Settings saved.", "success");
+            showToast("Settings saved", "Dashboard updated with the latest gym settings", "success");
+            loadCapacityAlert();
+        } catch (error) {
+            console.error("Could not save gym settings:", error);
+            showSettingsMessage(error.message || "Settings could not be saved.", "error");
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = "Save Settings";
+        }
+    }
+
+    async function generateInviteCode() {
+        if (!canManageGym) {
+            return;
+        }
+
+        const generateButton = document.getElementById("generate-invite-code-button");
+
+        showMemberAccessMessage("");
+        generateButton.disabled = true;
+        generateButton.textContent = "Generating...";
+
+        try {
+            const response = await fetch(`/gyms/${encodeURIComponent(dashboardGym)}/invite-code`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || `Invite code request failed with status ${response.status}`);
+            }
+
+            populateMemberAccess(data);
+            showMemberAccessMessage("New invite code generated.", "success");
+            showToast("Invite code generated", data.invite_code, "success");
+        } catch (error) {
+            console.error("Could not generate invite code:", error);
+            showMemberAccessMessage(error.message || "Invite code could not be generated.", "error");
+        } finally {
+            generateButton.disabled = false;
+            generateButton.textContent = "Generate New Invite Code";
+        }
+    }
+
+    function animateCounter(element, nextValue) {
+        const startValue = Number(element.textContent) || 0;
+        const endValue = Number(nextValue) || 0;
+
+        if (startValue === endValue) {
+            element.textContent = endValue;
+            return;
+        }
+
+        const duration = 520;
+        const startedAt = performance.now();
+
+        element.classList.remove("is-updating");
+        void element.offsetWidth;
+        element.classList.add("is-updating");
+
+        function tick(now) {
+            const progress = Math.min((now - startedAt) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const value = Math.round(startValue + (endValue - startValue) * eased);
+
+            element.textContent = value;
+
+            if (progress < 1) {
+                requestAnimationFrame(tick);
+            } else {
+                element.textContent = endValue;
+                window.setTimeout(() => element.classList.remove("is-updating"), 80);
+            }
+        }
+
+        requestAnimationFrame(tick);
+    }
+
+    function updateMiniKpis(labels, values) {
+        const entriesElement = document.getElementById("entries-today");
+        const exitsElement = document.getElementById("exits-today");
+        const peakHourElement = document.getElementById("peak-hour");
+        const trendElement = document.getElementById("current-trend");
+        let entries = 0;
+        let exits = 0;
+        let peakIndex = -1;
+
+        values.forEach((value, index) => {
+            if (peakIndex === -1 || value > values[peakIndex]) {
+                peakIndex = index;
+            }
+
+            if (index === 0) {
+                return;
+            }
+
+            const delta = value - values[index - 1];
+
+            if (delta > 0) {
+                entries += delta;
+            } else if (delta < 0) {
+                exits += Math.abs(delta);
+            }
+        });
+
+        entriesElement.textContent = entries;
+        exitsElement.textContent = exits;
+        peakHourElement.textContent = peakIndex >= 0 ? labels[peakIndex] : "--";
+
+        if (values.length < 2) {
+            trendElement.textContent = "Stable";
+            return;
+        }
+
+        const latestDelta = values[values.length - 1] - values[values.length - 2];
+        trendElement.textContent = latestDelta > 0 ? "Rising" : latestDelta < 0 ? "Cooling" : "Stable";
+    }
+
+    function updateMiniKpisFromChart() {
+        if (!occupancyChart) {
+            return;
+        }
+
+        updateMiniKpis(
+            occupancyChart.data.labels,
+            occupancyChart.data.datasets[0].data.map((value) => Number(value) || 0),
+        );
+    }
+
+    // Aktuelle KPI-Kacheln zentral aktualisieren, damit Initialzustand und Live-Events dieselbe Logik nutzen.
+    function updateCapacityUi(capacity) {
+        const currentElement = document.getElementById("current_count");
+        const maxElement = document.getElementById("max-capacity");
+        const statusElement = document.getElementById("capacity-status");
+        const statusChipElement = document.getElementById("capacity-status-chip");
+        const percentElement = document.getElementById("capacity-percent");
+        const progressElement = document.getElementById("capacity-progress");
+        const ringElement = document.getElementById("capacity-ring");
+        const ringLabelElement = document.getElementById("ring-percent-label");
+
+        const currentCount = capacity.current_count ?? capacity.current;
+        const percent = capacity.max ? Math.round((currentCount / capacity.max) * 100) : 0;
+
+        document.body.dataset.status = capacity.status;
+        animateCounter(currentElement, currentCount);
+        maxElement.textContent = capacity.max;
+        statusElement.textContent = capacity.status;
+        statusChipElement.textContent = capacity.status;
+        percentElement.textContent = `${percent}%`;
+        progressElement.style.width = `${percent}%`;
+        ringElement.style.setProperty("--ring-percent", `${percent}%`);
+        ringLabelElement.textContent = `${percent}%`;
+    }
+
+    // Live-Messpunkt an den bestehenden Chart.js Line Chart anhaengen.
+    function appendLiveChartPoint(capacity) {
+        if (!occupancyChart) {
+            return;
+        }
+
+        occupancyChart.data.labels.push(formatTimestamp(new Date().toISOString()));
+        occupancyChart.data.datasets[0].data.push(capacity.current_count ?? capacity.current);
+
+        // Alte Punkte entfernen, damit der Live-Chart responsive und performant bleibt.
+        if (occupancyChart.data.labels.length > maxLiveChartPoints) {
+            occupancyChart.data.labels.shift();
+            occupancyChart.data.datasets[0].data.shift();
+        }
+
+        occupancyChart.update();
+        updateMiniKpisFromChart();
+        document.getElementById("chart-empty").parentElement.classList.remove("is-empty");
+    }
+
+    // Status-Pill oben im Dashboard an den Socket.IO-Verbindungszustand koppeln.
+    function updateConnectionStatus(isConnected) {
+        const connectionStatus = document.getElementById("connection-status");
+        const connectionLabel = document.getElementById("connection-label");
+
+        connectionStatus.classList.toggle("is-offline", !isConnected);
+        connectionLabel.textContent = isConnected ? "LIVE" : "Reconnecting...";
+    }
+
+    function updateAlertUi(alert) {
+        const alertCard = document.getElementById("capacity-alert");
+        const statusElement = document.getElementById("alert-status");
+        const severityElement = document.getElementById("alert-severity");
+        const messageElement = document.getElementById("alert-message");
+        const utilizationElement = document.getElementById("alert-utilization");
+
+        alertCard.dataset.severity = alert.severity;
+        document.body.dataset.status = alert.status;
+        statusElement.textContent = alert.status;
+        severityElement.textContent = alert.severity;
+        messageElement.textContent = alert.message;
+        utilizationElement.textContent = `${alert.utilization_percent}%`;
+    }
+
+    function showToast(title, message, tone = "success") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+
+        toast.className = "toast";
+        toast.dataset.tone = tone;
+        toast.innerHTML = `
+            <span class="toast-marker"></span>
+            <span>
+                <span class="toast-title">${title}</span>
+                <span class="toast-message">${message}</span>
+            </span>
+        `;
+
+        container.prepend(toast);
+
+        window.setTimeout(() => {
+            toast.classList.add("is-hiding");
+            toast.addEventListener("animationend", () => toast.remove(), { once: true });
+        }, 3200);
+    }
+
+    function notifyCapacityChange(data) {
+        const currentCount = data.current_count ?? data.current;
+        const delta = currentCount - lastKnownCount;
+
+        if (delta > 0) {
+            showToast(`+${delta} Member entered`, `${currentCount} / ${data.max} currently inside`, "success");
+        } else if (delta < 0) {
+            showToast(`${delta} Member left`, `${currentCount} / ${data.max} currently inside`, "success");
+        }
+
+        if (currentCount === data.max) {
+            showToast("Gym at peak capacity", "Capacity limit reached in realtime", "critical");
+        } else if (data.status === "BUSY") {
+            showToast("Gym getting busy", `${currentCount} / ${data.max} capacity used`, "warning");
+        }
+
+        lastKnownCount = currentCount;
+    }
+
+    // History-Daten in einen responsive Chart.js Line Chart umwandeln.
+    function renderOccupancyChart(history) {
+        const chartElement = document.getElementById("occupancyChart");
+        const chartFrame = chartElement.closest(".chart-frame");
+        const labels = history.map((event) => formatTimestamp(event.timestamp));
+        const values = history.map((event) => event.current_count);
+
+        // Leeren Zustand anzeigen, solange der Endpoint keine Messpunkte liefert.
+        chartFrame.classList.toggle("is-empty", history.length === 0);
+
+        // Vor einem erneuten Rendern die alte Chart-Instanz entfernen.
+        if (occupancyChart) {
+            occupancyChart.destroy();
+        }
+
+        // Chart.js Line Chart fuer Besucherzahlen ueber Zeit erzeugen.
+        occupancyChart = new Chart(chartElement, {
+            type: "line",
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: "Besucher",
+                        data: values,
+                        borderColor: getAccentColor(),
+                        backgroundColor: "rgba(34, 211, 238, 0.055)",
+                        borderWidth: 2,
+                        pointBackgroundColor: "#050505",
+                        pointBorderColor: getAccentColor(),
+                        pointBorderWidth: 1,
+                        pointRadius: 2,
+                        pointHoverRadius: 5,
+                        tension: 0.35,
+                        fill: true,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: "index",
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        backgroundColor: "rgba(5, 5, 5, 0.94)",
+                        borderColor: "rgba(103,232,249,0.22)",
+                        borderWidth: 1,
+                        titleColor: "#ffffff",
+                        bodyColor: "rgba(255,255,255,0.82)",
+                        displayColors: false,
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Zeit",
+                            color: "rgba(176,195,199,0.62)",
+                        },
+                        grid: {
+                            color: "rgba(125,249,255,0.07)",
+                        },
+                        ticks: {
+                            color: "rgba(176,195,199,0.62)",
+                            maxRotation: 0,
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Besucher",
+                            color: "rgba(176,195,199,0.62)",
+                        },
+                        grid: {
+                            color: "rgba(125,249,255,0.07)",
+                        },
+                        ticks: {
+                            color: "rgba(176,195,199,0.62)",
+                            precision: 0,
+                        },
+                    },
+                },
+            },
+        });
+        updateMiniKpis(labels, values);
+    }
+
+    async function loadOccupancyHistory() {
+        try {
+            // History automatisch aus dem bestehenden Flask-Endpoint des aktuellen Gyms laden.
+            const response = await fetch(`/gyms/${encodeURIComponent(dashboardGym)}/history`);
+
+            if (!response.ok) {
+                throw new Error(`History request failed with status ${response.status}`);
+            }
+
+            // JSON-Array aus dem Endpoint lesen und an Chart.js uebergeben.
+            const history = await response.json();
+
+            renderOccupancyChart(history);
+        } catch (error) {
+            console.error("Could not load occupancy history:", error);
+        }
+    }
+
+    async function loadCapacityAlert() {
+        try {
+            const response = await fetch(`/gyms/${encodeURIComponent(dashboardGym)}/alerts`);
+
+            if (!response.ok) {
+                throw new Error(`Alert request failed with status ${response.status}`);
+            }
+
+            const alert = await response.json();
+
+            updateAlertUi(alert);
+        } catch (error) {
+            console.error("Could not load capacity alert:", error);
+        }
+    }
+
+    async function loadBestTrainingTime() {
+        const valueElement = document.getElementById("best-time-value");
+        const noteElement = document.getElementById("best-time-note");
+
+        try {
+            const response = await fetch(`/gyms/${encodeURIComponent(dashboardGym)}/best-time`);
+
+            if (!response.ok) {
+                throw new Error(`Best-time request failed with status ${response.status}`);
+            }
+
+            const bestTime = await response.json();
+
+            if (!bestTime.label) {
+                valueElement.textContent = "Not enough data";
+                noteElement.textContent = "Collect more occupancy events";
+                return;
+            }
+
+            valueElement.textContent = bestTime.label;
+            noteElement.textContent = `Average occupancy: ${bestTime.average_occupancy}`;
+        } catch (error) {
+            console.error("Could not load best training time:", error);
+            valueElement.textContent = "Not enough data";
+            noteElement.textContent = "Prediction unavailable";
+        }
+    }
+
+    async function loadPeakHour() {
+        const valueElement = document.getElementById("peak-hour-value");
+        const noteElement = document.getElementById("peak-hour-note");
+
+        try {
+            const response = await fetch(`/gyms/${encodeURIComponent(dashboardGym)}/peak-hour`);
+
+            if (!response.ok) {
+                throw new Error(`Peak-hour request failed with status ${response.status}`);
+            }
+
+            const peakHour = await response.json();
+
+            if (!peakHour.label) {
+                valueElement.textContent = "Not enough data";
+                noteElement.textContent = "Collect more occupancy events";
+                return;
+            }
+
+            valueElement.textContent = peakHour.label;
+            noteElement.textContent = `Average occupancy: ${peakHour.average_occupancy}`;
+        } catch (error) {
+            console.error("Could not load peak hour:", error);
+            valueElement.textContent = "Not enough data";
+            noteElement.textContent = "Analytics unavailable";
+        }
+    }
+
+    // Initiale Branding- und Analytics-Daten beim Laden des Dashboards abrufen.
+    async function initializeDashboard() {
+        await loadGymBranding();
+        loadOccupancyHistory();
+        loadCapacityAlert();
+        loadBestTrainingTime();
+        loadPeakHour();
+        loadNotificationPreference();
+        loadNotifications();
+
+        if (canManageGym) {
+            loadPushDashboard();
+            loadDevices();
+        }
+
+        if (canViewMembers) {
+            loadGymMembers();
+        }
+
+        if (canViewActivityLog) {
+            loadActivityLog();
+        }
+    }
+
+    initializeDashboard();
+
+    // Socket.IO meldet erfolgreiche Verbindung; das Dashboard zeigt dann aktiv Live-Betrieb.
+    socket.on("connect", () => {
+        console.log("Socket connected", socket.id);
+        updateConnectionStatus(true);
+        socket.emit("join_gym", { gym: dashboardGym });
+    });
+
+    socket.on("connect_error", (error) => {
+        console.error("Socket connect_error:", error);
+        updateConnectionStatus(false);
+    });
+
+    // Socket.IO meldet Trennung; die UI zeigt transparent, dass reconnectet wird.
+    socket.on("disconnect", () => {
+        updateConnectionStatus(false);
+    });
+
+    // Auf Backend-Event "capacity_update" hoeren und Dashboard ohne Browser-Refresh aktualisieren.
+    socket.on("capacity_update", (data) => {
+        console.log("Realtime event received:", data);
+
+        // Nur Events fuer das aktuell geoeffnete Gym verarbeiten.
+        if (data.gym !== dashboardGym) {
+            return;
+        }
+
+        // KPI-Werte und Chart sofort live aktualisieren.
+        notifyCapacityChange(data);
+        updateCapacityUi(data);
+        appendLiveChartPoint(data);
+        loadCapacityAlert();
+    });
+</script>
 </body>
 </html>
